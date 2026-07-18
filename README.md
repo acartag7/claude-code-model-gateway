@@ -128,6 +128,10 @@ pnpm run install:user -- --apply
 pnpm run doctor -- --live
 ```
 
+The installer preserves unrelated settings and files. Its preview prints every
+stale repository-managed agent or skill file that apply mode will remove; review
+those `remove_path` lines before applying.
+
 Then launch Claude Code with an exact model:
 
 ```sh

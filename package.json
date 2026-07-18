@@ -19,7 +19,7 @@
     "preflight": "node scripts/preflight.mjs",
     "smoke": "node scripts/smoke.mjs",
     "test": "node --test",
-    "verify": "pnpm generate && pnpm check:generated && pnpm test"
+    "verify": "pnpm check:generated && pnpm test"
   },
   "devDependencies": {
     "yaml": "2.8.4"

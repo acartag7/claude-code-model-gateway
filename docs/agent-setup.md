@@ -35,6 +35,8 @@ Do not claim setup is complete before those applicable checks pass.
 - Treat `models.yaml` as the only editable catalog.
 - After any catalog change, run `pnpm generate` and `pnpm verify`.
 - Never hand-edit generated agents, generated settings, or generated profiles.
+- Review every `remove_path` printed by `install:user` before applying it. The
+  installer removes only stale files carrying this repository's managed marker.
 - Never print, log, commit, or copy gateway keys, API keys, OAuth files, or
   Cloudflare Access secrets into repository files.
 - Never read a secret merely to prove that it exists. Use exit status or a
