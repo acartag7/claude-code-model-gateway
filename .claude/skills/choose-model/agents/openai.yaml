@@ -1,0 +1,5 @@
+# Managed by claude-code-model-gateway.
+interface:
+  display_name: "Choose Model"
+  short_description: "Route engineering work to the right model"
+  default_prompt: "Use $choose-model to select a model, effort level, context mode, and fallback for this task."

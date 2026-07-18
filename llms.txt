@@ -1,0 +1,33 @@
+# Claude Code Model Gateway
+
+> A configuration and verification kit for using exact Claude, Codex, GLM, and Grok model routes through CLIProxyAPI in Claude Code without hiding fallback or context-window limitations.
+
+The human-edited source of truth is `models.yaml`. Generated agents, settings,
+and profiles must match it. Never invent model IDs, provider availability,
+context sizes, credentials, or successful live results. Local setup is macOS
+first, binds CLIProxyAPI to loopback, and requires the human to complete browser
+OAuth. Run deterministic checks before inference tests.
+
+## Setup
+
+- [Agent setup contract](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/agent-setup.md): Exact zero-context workflow, hard safety rules, success criteria, failure handling, and completion report.
+- [Complete macOS setup](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/setup.md): Human walkthrough for local and remote gateways, provider login, isolated-profile testing, live verification, and rollback.
+- [Human overview](https://github.com/acartag7/claude-code-model-gateway/blob/main/README.md): Problem, outcome, quick start, supported catalog, honest limits, and security boundary.
+
+## Configuration
+
+- [Model catalog](https://github.com/acartag7/claude-code-model-gateway/blob/main/models.yaml): The only hand-edited source for model IDs, context evidence, effort, roles, fallback, and generated agents.
+- [CLIProxyAPI baseline](https://github.com/acartag7/claude-code-model-gateway/blob/main/config/cliproxy.example.yaml): Loopback-only, bearer-authenticated starting configuration with remote management, request cloaking, and cross-model quota substitution disabled.
+- [Environment template](https://github.com/acartag7/claude-code-model-gateway/blob/main/.env.example): Names of required gateway variables and optional Cloudflare Access service-token variables; contains no values.
+
+## Behavior and limits
+
+- [Custom models and subagents](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/custom-models.md): Exact routing, model-picker limitations, subagent override behavior, and explicit fallback rules.
+- [Context windows](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/context-windows.md): Difference between upstream capacity and Claude Code's client budget, safe mode, and unsupported full-context experiments.
+- [Security policy](https://github.com/acartag7/claude-code-model-gateway/blob/main/SECURITY.md): Credential handling, network exposure, and private vulnerability reporting.
+
+## Optional
+
+- [Claude Code gateway protocol](https://code.claude.com/docs/en/llm-gateway-protocol): Upstream protocol reference.
+- [Claude Code model configuration](https://code.claude.com/docs/en/model-config): Upstream model selection and environment behavior.
+- [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI): Gateway implementation used by the reference setup.

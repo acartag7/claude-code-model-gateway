@@ -1,0 +1,150 @@
+version: 1
+fallbackModel: claude-opus-4-8
+safeCustomContextTokens: 200000
+autoCompactEnabled: true
+autoCompactPercent: 95
+
+models:
+  - id: claude-fable-5
+    name: Claude Fable 5
+    provider: anthropic
+    contextTokens: 1000000
+    contextEvidence: provider-docs
+    claudeCodeModel: claude-fable-5[1m]
+    recommendedEffort: high
+    roles: [hardest-synthesis, long-running-reasoning]
+
+  - id: claude-opus-4-8
+    name: Claude Opus 4.8
+    provider: anthropic
+    contextTokens: 1000000
+    contextEvidence: provider-docs
+    claudeCodeModel: claude-opus-4-8[1m]
+    recommendedEffort: xhigh
+    roles: [contract-review, security-review, adversarial-review]
+
+  - id: claude-sonnet-5
+    name: Claude Sonnet 5
+    provider: anthropic
+    contextTokens: 1000000
+    contextEvidence: provider-docs
+    claudeCodeModel: claude-sonnet-5[1m]
+    recommendedEffort: high
+    roles: [daily-engineering, orchestration]
+
+  - id: gpt-5.6-sol
+    name: GPT 5.6 Sol
+    provider: openai-codex
+    contextTokens: 272000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-5.6-sol
+    recommendedEffort: xhigh
+    roles: [acceptance-design, complex-implementation, research]
+    experimentalFullContext:
+      model: gpt-5.6-sol[1m]
+      autoCompactWindowTokens: 272000
+      note: Unsupported Claude Code ceiling shim for a 272K upstream model.
+
+  - id: gpt-5.6-terra
+    name: GPT 5.6 Terra
+    provider: openai-codex
+    contextTokens: 272000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-5.6-terra
+    recommendedEffort: high
+    roles: [general-implementation, integration-review]
+    experimentalFullContext:
+      model: gpt-5.6-terra[1m]
+      autoCompactWindowTokens: 272000
+      note: Unsupported Claude Code ceiling shim for a 272K upstream model.
+
+  - id: gpt-5.5
+    name: GPT 5.5
+    provider: openai-codex
+    contextTokens: 272000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-5.5
+    recommendedEffort: high
+    roles: [deep-coding, complex-reasoning]
+    experimentalFullContext:
+      model: gpt-5.5[1m]
+      autoCompactWindowTokens: 272000
+      note: Unsupported Claude Code ceiling shim for a 272K upstream model.
+
+  - id: gpt-5.3-codex-spark
+    name: GPT 5.3 Codex Spark
+    provider: openai-codex
+    contextTokens: 128000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-5.3-codex-spark
+    recommendedEffort: high
+    roles: [fast-coding, narrow-mechanical-work]
+
+  - id: grok-4.5
+    name: Grok 4.5
+    provider: xai
+    contextTokens: 500000
+    contextEvidence: provider-docs
+    claudeCodeModel: grok-4.5
+    recommendedEffort: high
+    roles: [independent-review, cross-family-reasoning]
+    experimentalFullContext:
+      model: grok-4.5[1m]
+      autoCompactWindowTokens: 500000
+      note: Unsupported Claude Code ceiling shim for a 500K upstream model.
+
+  - id: grok-composer-2.5-fast
+    name: Grok Composer 2.5 Fast
+    provider: xai
+    contextTokens: 200000
+    contextEvidence: conservative-unverified
+    claudeCodeModel: grok-composer-2.5-fast
+    recommendedEffort: high
+    roles: [fast-exploration, narrow-mechanical-work]
+
+  - id: zai/glm-5.2
+    name: GLM 5.2
+    provider: zai
+    contextTokens: 1000000
+    contextEvidence: environment-verified
+    claudeCodeModel: zai/glm-5.2
+    recommendedEffort: max
+    roles: [implementation, large-repository-work]
+    experimentalFullContext:
+      model: zai/glm-5.2[1m]
+      autoCompactWindowTokens: 1000000
+      note: The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim.
+
+agents:
+  - name: spec-critic
+    description: Find contract ambiguity, unsafe gaps, and acceptance-test omissions before implementation starts.
+    model: claude-opus-4-8
+    effort: xhigh
+    tools: [Read, Grep, Glob]
+
+  - name: acceptance-author
+    description: Turn a ready contract into hostile black-box acceptance tests without editing implementation code.
+    model: gpt-5.6-sol
+    effort: xhigh
+
+  - name: implementer
+    description: Implement an approved contract against frozen acceptance tests.
+    model: zai/glm-5.2
+    effort: max
+
+  - name: integration-reviewer
+    description: Review wiring, runtime behavior, and cross-boundary integration against the exact commit.
+    model: gpt-5.6-terra
+    effort: high
+    tools: [Read, Grep, Glob, Bash]
+
+  - name: independent-reviewer
+    description: Provide an independent cross-family review of a completed implementation.
+    model: grok-4.5
+    effort: high
+    tools: [Read, Grep, Glob, Bash]
+
+  - name: fast-worker
+    description: Handle narrow, mechanical coding tasks where latency matters more than broad synthesis.
+    model: gpt-5.3-codex-spark
+    effort: high

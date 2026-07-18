@@ -1,0 +1,27 @@
+{
+  "name": "claude-code-model-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Run explicit multi-model Claude Code workflows through an LLM gateway without lying about routing or context limits.",
+  "type": "module",
+  "packageManager": "pnpm@10.32.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "bootstrap:local": "node scripts/bootstrap-local.mjs",
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
+    "doctor": "node scripts/doctor.mjs",
+    "install:user": "node scripts/install-user.mjs",
+    "launch": "node scripts/launch.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "test": "node --test",
+    "verify": "pnpm generate && pnpm check:generated && pnpm test"
+  },
+  "devDependencies": {
+    "yaml": "2.8.4"
+  },
+  "license": "MIT"
+}

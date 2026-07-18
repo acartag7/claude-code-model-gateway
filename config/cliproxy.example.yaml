@@ -1,0 +1,36 @@
+# Safe local starting point. This is intentionally not a remotely deployable
+# configuration. Add API credentials outside version control before use.
+host: "127.0.0.1"
+port: 8317
+auth-dir: "~/.cli-proxy-api/accounts"
+
+# Keep this empty in git. Populate the runtime copy with a strong bearer key.
+api-keys: []
+
+remote-management:
+  allow-remote: false
+  secret-key: ""
+  disable-control-panel: true
+
+force-model-prefix: true
+request-retry: 3
+max-retry-credentials: 2
+max-retry-interval: 30
+disable-cooling: false
+disable-claude-cloak-mode: true
+
+routing:
+  strategy: "fill-first"
+  session-affinity: true
+  session-affinity-ttl: "1h"
+
+# Do not silently substitute another model when quota is exhausted.
+quota-exceeded:
+  switch-project: false
+  switch-preview-model: false
+  antigravity-credits: false
+
+debug: false
+logging-to-file: false
+usage-statistics-enabled: false
+ws-auth: true

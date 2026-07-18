@@ -1,0 +1,86 @@
+{
+  "safeCustomContextTokens": 200000,
+  "autoCompactPercent": 95,
+  "profiles": {
+    "claude-fable-5": {
+      "safeModel": "claude-fable-5[1m]",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": null
+    },
+    "claude-opus-4-8": {
+      "safeModel": "claude-opus-4-8[1m]",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "xhigh",
+      "experimentalFullContext": null
+    },
+    "claude-sonnet-5": {
+      "safeModel": "claude-sonnet-5[1m]",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": null
+    },
+    "gpt-5.6-sol": {
+      "safeModel": "gpt-5.6-sol",
+      "upstreamContextTokens": 272000,
+      "recommendedEffort": "xhigh",
+      "experimentalFullContext": {
+        "model": "gpt-5.6-sol[1m]",
+        "autoCompactWindowTokens": 272000,
+        "note": "Unsupported Claude Code ceiling shim for a 272K upstream model."
+      }
+    },
+    "gpt-5.6-terra": {
+      "safeModel": "gpt-5.6-terra",
+      "upstreamContextTokens": 272000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": {
+        "model": "gpt-5.6-terra[1m]",
+        "autoCompactWindowTokens": 272000,
+        "note": "Unsupported Claude Code ceiling shim for a 272K upstream model."
+      }
+    },
+    "gpt-5.5": {
+      "safeModel": "gpt-5.5",
+      "upstreamContextTokens": 272000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": {
+        "model": "gpt-5.5[1m]",
+        "autoCompactWindowTokens": 272000,
+        "note": "Unsupported Claude Code ceiling shim for a 272K upstream model."
+      }
+    },
+    "gpt-5.3-codex-spark": {
+      "safeModel": "gpt-5.3-codex-spark",
+      "upstreamContextTokens": 128000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": null
+    },
+    "grok-4.5": {
+      "safeModel": "grok-4.5",
+      "upstreamContextTokens": 500000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": {
+        "model": "grok-4.5[1m]",
+        "autoCompactWindowTokens": 500000,
+        "note": "Unsupported Claude Code ceiling shim for a 500K upstream model."
+      }
+    },
+    "grok-composer-2.5-fast": {
+      "safeModel": "grok-composer-2.5-fast",
+      "upstreamContextTokens": 200000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": null
+    },
+    "zai/glm-5.2": {
+      "safeModel": "zai/glm-5.2",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "max",
+      "experimentalFullContext": {
+        "model": "zai/glm-5.2[1m]",
+        "autoCompactWindowTokens": 1000000,
+        "note": "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim."
+      }
+    }
+  }
+}
