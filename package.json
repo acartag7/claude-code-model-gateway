@@ -15,6 +15,7 @@
     "doctor": "node scripts/doctor.mjs",
     "install:user": "node scripts/install-user.mjs",
     "launch": "node scripts/launch.mjs",
+    "plugin:validate": "claude plugin validate . && claude plugin validate ./plugins/model-gateway",
     "preflight": "node scripts/preflight.mjs",
     "smoke": "node scripts/smoke.mjs",
     "test": "node --test",

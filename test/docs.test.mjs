@@ -19,7 +19,7 @@ async function assertRepositoryPathExists(reference, source) {
 }
 
 test("human documentation has no broken repository links", async () => {
-  for (const relative of ["README.md", "docs/setup.md", "docs/agent-setup.md"]) {
+  for (const relative of ["README.md", "docs/setup.md", "docs/agent-setup.md", "docs/plugins.md"]) {
     const source = path.join(root, relative);
     const text = await readFile(source, "utf8");
     for (const reference of markdownLinks(text)) {

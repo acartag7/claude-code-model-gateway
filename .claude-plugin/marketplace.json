@@ -1,0 +1,14 @@
+{
+  "name": "claude-code-model-gateway",
+  "owner": {
+    "name": "acartag7"
+  },
+  "description": "Explicit multi-provider model routing for Claude Code through CLIProxyAPI.",
+  "plugins": [
+    {
+      "name": "model-gateway",
+      "source": "./plugins/model-gateway",
+      "description": "Adds namespaced model-routing agents and a choose-model skill for Claude Code gateways."
+    }
+  ]
+}

@@ -41,6 +41,40 @@ evidence, and custom agents. The rest is generated or verified from it.
 - Local and live checks for configuration drift and missing models
 - A loopback-only CLIProxyAPI starter configuration
 
+## Install the Claude Code plugin
+
+The plugin is the easiest way to distribute the generated agents and
+`choose-model` skill across projects. It is namespaced and installs no hooks,
+settings, credentials, or gateway processes.
+
+From Claude Code:
+
+```text
+/plugin marketplace add acartag7/claude-code-model-gateway
+/plugin install model-gateway@claude-code-model-gateway
+/reload-plugins
+```
+
+Or from a terminal:
+
+```sh
+claude plugin marketplace add acartag7/claude-code-model-gateway
+claude plugin install model-gateway@claude-code-model-gateway --scope user
+```
+
+Use the namespaced skill and agents:
+
+```text
+/model-gateway:choose-model
+@model-gateway:spec-critic
+@model-gateway:implementer
+```
+
+The plugin handles Claude-side model routing only. Continue with the local or
+remote gateway setup below so Claude Code starts with the required gateway
+environment. See [plugin boundaries](docs/plugins.md) before combining it with
+a process framework.
+
 ## Quick start on macOS
 
 You need Node.js 22 or newer, pnpm 10.32.0 or newer, Claude Code 2.1.207 or
@@ -189,6 +223,7 @@ explicitly; browser-login redirects are rejected as API authentication. See
 - [`docs/setup.md`](docs/setup.md): complete operator walkthrough
 - [`docs/custom-models.md`](docs/custom-models.md): picker and subagent behavior
 - [`docs/context-windows.md`](docs/context-windows.md): safe and experimental context handling
+- [`docs/plugins.md`](docs/plugins.md): plugin installation, boundaries, and process-framework compatibility
 - [`config/cliproxy.example.yaml`](config/cliproxy.example.yaml): hardened local gateway baseline
 
 ## License

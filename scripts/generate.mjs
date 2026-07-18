@@ -1,10 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { chmod, lstat, mkdir, readFile, readdir, realpath, rename, unlink, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCatalog, modelMap } from "./lib/catalog.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const pluginRoot = "plugins/model-gateway";
 const generatedMarker = "<!-- Generated from models.yaml. Do not edit. -->";
 const generatedHeader = `${generatedMarker}\n`;
 
@@ -26,6 +28,8 @@ function renderAgent(agent, model) {
     "",
     generatedMarker,
     "",
+    "This agent supplies model and tool routing only. Project and task instructions",
+    "remain the process contract and always take precedence.",
     "Follow the task contract exactly. Report evidence, uncertainty, and blockers.",
     "Do not silently switch models or weaken acceptance criteria.",
     "",
@@ -50,6 +54,10 @@ ${rows.join("\n")}
 
 Default fallback: \`${fallback}\`.
 
+This table selects models, not process isolation. If a project requires two
+seats to use different harnesses, two subagents in one Claude Code process do
+not satisfy that requirement.
+
 Do not select GPT Image 2 as an agent. It is a direct image-generation API
 model and is intentionally absent from this routing table.
 `;
@@ -60,11 +68,19 @@ export function renderFiles(catalog) {
   const fallback = models.get(catalog.fallbackModel);
   const files = new Map();
   for (const agent of catalog.agents) {
-    files.set(`.claude/agents/${agent.name}.md`, renderAgent(agent, models.get(agent.model)));
+    const contents = renderAgent(agent, models.get(agent.model));
+    files.set(`.claude/agents/${agent.name}.md`, contents);
+    files.set(`${pluginRoot}/agents/${agent.name}.md`, contents);
   }
+  const routingReference = renderRoutingReference(catalog);
   files.set(
     ".claude/skills/choose-model/references/model-routing.md",
-    renderRoutingReference(catalog),
+    routingReference,
+  );
+  files.set(`${pluginRoot}/skills/choose-model/references/model-routing.md`, routingReference);
+  files.set(
+    `${pluginRoot}/skills/choose-model/SKILL.md`,
+    readFileSync(path.join(root, ".claude", "skills", "choose-model", "SKILL.md"), "utf8"),
   );
   files.set(
     "generated/claude-settings.json",
@@ -116,8 +132,7 @@ async function safeWrite(relative, contents) {
   }
 }
 
-async function staleGeneratedAgents(files) {
-  const directory = path.join(root, ".claude", "agents");
+async function staleGeneratedAgentsIn(directory, relativeDirectory, files) {
   const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
     if (error.code === "ENOENT") return [];
     throw error;
@@ -126,13 +141,25 @@ async function staleGeneratedAgents(files) {
   const stale = [];
   for (const entry of entries) {
     if (!entry.name.endsWith(".md")) continue;
-    const relative = `.claude/agents/${entry.name}`;
+    const relative = `${relativeDirectory}/${entry.name}`;
     if (files.has(relative)) continue;
     const file = path.join(directory, entry.name);
     const metadata = await lstat(file);
     if (!metadata.isFile() || metadata.size > 256 * 1024) continue;
     const contents = await readFile(file, "utf8");
     if (contents.includes(generatedMarker)) stale.push(relative);
+  }
+  return stale;
+}
+
+async function staleGeneratedAgents(files) {
+  const directories = [
+    [path.join(root, ".claude", "agents"), ".claude/agents"],
+    [path.join(root, pluginRoot, "agents"), `${pluginRoot}/agents`],
+  ];
+  const stale = [];
+  for (const [directory, relative] of directories) {
+    stale.push(...await staleGeneratedAgentsIn(directory, relative, files));
   }
   return stale;
 }

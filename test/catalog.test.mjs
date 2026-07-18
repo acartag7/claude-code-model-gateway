@@ -32,6 +32,26 @@ test("custom agents do not claim unsupported 1M context", async () => {
   }
 });
 
+test("plugin agents match standalone agents and remain routing-only", async () => {
+  const catalog = await loadCatalog(root);
+  const files = renderFiles(catalog);
+  for (const agent of catalog.agents) {
+    const standalone = files.get(`.claude/agents/${agent.name}.md`);
+    const plugin = files.get(`plugins/model-gateway/agents/${agent.name}.md`);
+    assert.equal(plugin, standalone);
+    assert.match(plugin, /supplies model and tool routing only/);
+    assert.match(plugin, /Project and task instructions/);
+  }
+  assert.equal(
+    files.get("plugins/model-gateway/skills/choose-model/SKILL.md"),
+    await readFile(path.join(root, ".claude/skills/choose-model/SKILL.md"), "utf8"),
+  );
+  assert.match(
+    files.get("plugins/model-gateway/skills/choose-model/SKILL.md"),
+    /not different harnesses/,
+  );
+});
+
 test("unknown fields fail closed", async () => {
   const source = await readFile(path.join(root, "models.yaml"), "utf8");
   const parsed = YAML.parse(source);

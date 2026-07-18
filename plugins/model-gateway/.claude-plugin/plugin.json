@@ -1,0 +1,11 @@
+{
+  "name": "model-gateway",
+  "description": "Namespaced model-routing agents and model-selection guidance for Claude Code gateways without replacing project workflow rules.",
+  "version": "0.1.0",
+  "author": {
+    "name": "acartag7"
+  },
+  "homepage": "https://github.com/acartag7/claude-code-model-gateway",
+  "repository": "https://github.com/acartag7/claude-code-model-gateway",
+  "license": "MIT"
+}

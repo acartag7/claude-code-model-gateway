@@ -12,6 +12,7 @@ OAuth. Run deterministic checks before inference tests.
 
 - [Agent setup contract](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/agent-setup.md): Exact zero-context workflow, hard safety rules, success criteria, failure handling, and completion report.
 - [Complete macOS setup](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/setup.md): Human walkthrough for local and remote gateways, provider login, isolated-profile testing, live verification, and rollback.
+- [Plugin distribution](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/plugins.md): Marketplace installation, namespaced agents, process-framework compatibility, and the boundary between plugin and launcher.
 - [Human overview](https://github.com/acartag7/claude-code-model-gateway/blob/main/README.md): Problem, outcome, quick start, supported catalog, honest limits, and security boundary.
 
 ## Configuration

@@ -168,6 +168,21 @@ pnpm run doctor -- --live
 
 A redirect to browser login is a failure, not successful API authentication.
 
+## Install the routing plugin
+
+After the gateway is working, prefer the namespaced plugin over copying routing
+agents into another profile:
+
+```sh
+claude plugin marketplace add acartag7/claude-code-model-gateway
+claude plugin install model-gateway@claude-code-model-gateway --scope user
+```
+
+Run `pnpm run plugin:validate` before publishing a plugin change. The plugin does
+not configure gateway environment variables or machine credentials; those remain
+the launcher's responsibility. Read `docs/plugins.md` before combining its seats
+with a process framework.
+
 ## Catalog changes
 
 When the operator adds or removes a model:
