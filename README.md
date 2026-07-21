@@ -102,10 +102,25 @@ pnpm run bootstrap:local -- --apply
 Authenticate only the providers you use:
 
 ```sh
-cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --claude-login
 cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --codex-login
 cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --xai-login
 ```
+
+### Anthropic authentication boundary
+
+Do not use CLIProxyAPI's `--claude-login` option with this project. Anthropic
+documents Pro and Max subscription access for its first-party Claude Code
+client, while API access and billing are separate through Anthropic Console.
+A consumer-plan OAuth credential is therefore not a supported general-purpose
+gateway credential here. Routing it through a third-party gateway may put the
+account at risk as terms and enforcement change.
+
+For Claude models, use an Anthropic Console API credential through a supported
+API integration, use first-party Claude Code directly, or use another platform
+whose Anthropic access explicitly covers the intended integration. This is an
+operational boundary, not legal advice. See Anthropic's
+[Pro/Max Claude Code guidance](https://support.anthropic.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+and [plan-versus-API guidance](https://support.anthropic.com/en/articles/9876003-i-subscribe-to-a-paid-claude-ai-plan-why-do-i-have-to-pay-separately-for-api-usage-on-console).
 
 Start the gateway in another terminal:
 

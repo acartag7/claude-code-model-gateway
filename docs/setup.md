@@ -85,7 +85,6 @@ it in this repository or shell history.
 Run only the providers you are entitled to use:
 
 ```sh
-cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --claude-login
 cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --codex-login
 cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --xai-login
 ```
@@ -93,6 +92,19 @@ cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --xai-login
 Each command opens a browser. Add `--no-browser` on a headless machine and
 follow the printed callback instructions. CLIProxyAPI writes OAuth credentials
 under `~/.cli-proxy-api/accounts`.
+
+Do not add CLIProxyAPI's `--claude-login` option. Anthropic documents Pro and
+Max plan access for first-party Claude Code, not as a general API credential,
+and bills Anthropic Console API usage separately. This repository does not
+support routing a Claude consumer-plan OAuth credential through a third-party
+gateway; doing so may put the account at risk as terms and enforcement change.
+
+Use an Anthropic Console API credential through a supported API integration,
+first-party Claude Code, or another platform whose Anthropic access explicitly
+covers the intended integration. This is operational guidance, not legal
+advice. See Anthropic's
+[Pro/Max Claude Code guidance](https://support.anthropic.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+and [plan-versus-API guidance](https://support.anthropic.com/en/articles/9876003-i-subscribe-to-a-paid-claude-ai-plan-why-do-i-have-to-pay-separately-for-api-usage-on-console).
 
 ## 4. Start and verify CLIProxyAPI
 
