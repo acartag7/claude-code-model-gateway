@@ -1,0 +1,10 @@
+{
+  "model": "claude-opus-4-8[1m]",
+  "effortLevel": "high",
+  "alwaysThinkingEnabled": true,
+  "autoCompactEnabled": true,
+  "env": {
+    "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "95"
+  }
+}
