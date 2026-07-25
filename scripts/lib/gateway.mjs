@@ -1,5 +1,16 @@
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
+// Claude Code resolves a cloud provider before it looks at ANTHROPIC_BASE_URL, so
+// any one of these left exported by another setup wins and the launch quietly
+// talks to Bedrock/Vertex/Foundry instead of this gateway. That is a fail-open:
+// the session still works, so nothing looks wrong, while every request bypasses
+// the curated catalog and the Access boundary in front of it.
+const CLOUD_PROVIDER_SELECTORS = [
+  "CLAUDE_CODE_USE_BEDROCK",
+  "CLAUDE_CODE_USE_VERTEX",
+  "CLAUDE_CODE_USE_FOUNDRY",
+];
+
 function accessHeaders(env) {
   const clientId = env.MODEL_GATEWAY_CF_ACCESS_CLIENT_ID;
   const clientSecret = env.MODEL_GATEWAY_CF_ACCESS_CLIENT_SECRET;
@@ -49,7 +60,13 @@ export function gatewayClaudeEnvironment(base = process.env) {
     ANTHROPIC_BASE_URL: gateway.origin,
     ANTHROPIC_AUTH_TOKEN: gateway.token,
     CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY: "1",
+    // Every model here is a gateway-custom id (gpt-*, zai/glm-*, grok-*). Claude
+    // Code only treats a model as effort-capable when it recognises it, so
+    // without this the catalog's recommendedEffort and each agent's effort are
+    // silently dropped for exactly the models this repo exists to route.
+    CLAUDE_CODE_ALWAYS_ENABLE_EFFORT: "1",
   };
+  for (const selector of CLOUD_PROVIDER_SELECTORS) delete env[selector];
   const customHeaders = Object.entries(gateway.additionalHeaders)
     .map(([name, value]) => `${name}: ${value}`)
     .join("\n");

@@ -41,6 +41,18 @@ export function underPromisedFullContextAgents(catalog) {
     .map((agent) => agent.name);
 }
 
+// Curating recommendedEffort per model is pointless if the launcher never passes
+// it: `claude --model X` alone runs at whatever effort happens to be globally
+// active, so the documented examples silently ignored the catalog. An explicit
+// user --effort still wins, in either the flag or --effort=value form.
+export function resolveClaudeArguments(selected, model, claudeArgs) {
+  const explicit = claudeArgs.some((argument) => (
+    argument === "--effort" || argument.startsWith("--effort=")
+  ));
+  const effort = explicit ? [] : ["--effort", model.recommendedEffort];
+  return ["--model", selected, ...effort, ...claudeArgs];
+}
+
 export function parseLaunchArguments(values) {
   const normalized = [...values];
   if (normalized[0] === "--") normalized.shift();
@@ -74,7 +86,7 @@ async function main() {
       console.error(`context_warning mode=safe agents=${underPromised.join(",")} reason=raised-ceiling-without-process-compaction-window`);
     }
   }
-  const child = spawn("claude", ["--model", selected, ...claudeArgs], {
+  const child = spawn("claude", resolveClaudeArguments(selected, model, claudeArgs), {
     env,
     stdio: "inherit",
   });

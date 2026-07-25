@@ -51,6 +51,31 @@ test("launcher environment clears global subagent override", () => {
   assert.equal(env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY, "1");
 });
 
+test("launcher environment clears inherited cloud provider selectors", () => {
+  // Claude Code picks a cloud provider before it reads ANTHROPIC_BASE_URL, so any
+  // of these surviving means the session bypasses the gateway entirely while
+  // still appearing to work.
+  const env = gatewayClaudeEnvironment({
+    MODEL_GATEWAY_URL: "https://example.com",
+    MODEL_GATEWAY_API_KEY: key,
+    CLAUDE_CODE_USE_BEDROCK: "1",
+    CLAUDE_CODE_USE_VERTEX: "1",
+    CLAUDE_CODE_USE_FOUNDRY: "1",
+  });
+  assert.equal(env.CLAUDE_CODE_USE_BEDROCK, undefined);
+  assert.equal(env.CLAUDE_CODE_USE_VERTEX, undefined);
+  assert.equal(env.CLAUDE_CODE_USE_FOUNDRY, undefined);
+  assert.equal(env.ANTHROPIC_BASE_URL, "https://example.com");
+});
+
+test("launcher environment forces effort on for gateway-custom model ids", () => {
+  const env = gatewayClaudeEnvironment({
+    MODEL_GATEWAY_URL: "https://example.com",
+    MODEL_GATEWAY_API_KEY: key,
+  });
+  assert.equal(env.CLAUDE_CODE_ALWAYS_ENABLE_EFFORT, "1");
+});
+
 test("Cloudflare Access service-token headers require a complete pair", () => {
   assert.throws(
     () => resolveGateway({

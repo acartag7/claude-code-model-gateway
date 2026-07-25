@@ -155,6 +155,22 @@ pnpm run launch -- safe gpt-5.6-sol
 pnpm run launch -- safe zai/glm-5.2
 ```
 
+Each launch also applies the model's `recommendedEffort` from the catalog, so the
+curated effort level is what actually runs. Pass `--effort <level>` yourself to
+override it for one session.
+
+Two things the launcher enforces about the environment, both silent failures
+otherwise:
+
+- `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX` and
+  `CLAUDE_CODE_USE_FOUNDRY` are cleared for the child process. Claude Code
+  selects a cloud provider *before* it reads `ANTHROPIC_BASE_URL`, so one of
+  these left exported by another setup would route the session around this
+  gateway — and the session would still appear to work.
+- `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1` is set, because effort is otherwise
+  dropped for model ids Claude Code does not recognise, which is every
+  gateway-custom id in the catalog.
+
 The [complete setup guide](docs/setup.md) includes Z.AI configuration,
 isolated-profile testing, expected output, remote gateways, and rollback.
 
