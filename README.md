@@ -165,8 +165,8 @@ depends on the accounts authenticated in CLIProxyAPI.
 
 | Provider | Models |
 | --- | --- |
-| Anthropic | Claude Fable 5, Claude Opus 4.8, Claude Sonnet 5 |
-| OpenAI Codex | GPT 5.3 Codex Spark, GPT 5.5, GPT 5.6 Sol, GPT 5.6 Terra |
+| Anthropic | Claude Fable 5, Claude Opus 5, Claude Opus 4.8, Claude Sonnet 5 |
+| OpenAI Codex | GPT 5.3 Codex Spark, GPT 5.5, GPT 5.6 Luna, GPT 5.6 Sol, GPT 5.6 Terra |
 | xAI | Grok 4.5, Grok Composer 2.5 Fast |
 | Z.AI | GLM 5.2 |
 

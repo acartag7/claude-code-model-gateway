@@ -10,6 +10,37 @@ function usage() {
   console.error("Usage: pnpm launch -- <safe|full> <model-id> [claude arguments]");
 }
 
+// Claude Code applies one compaction threshold per process, shared by the main
+// model and every subagent. The only safe value is the smallest upstream window
+// among the participants that claim a raised ceiling: a larger value lets a
+// smaller-window model reach its provider limit before compaction ever fires.
+export function resolveFullContextWindow(catalog, model) {
+  const models = modelMap(catalog);
+  const participants = [model];
+  for (const agent of catalog.agents) {
+    if (agent.contextMode !== "full") continue;
+    participants.push(models.get(agent.model));
+  }
+  let constrainedBy = model;
+  let window = model.experimentalFullContext.autoCompactWindowTokens;
+  for (const participant of participants) {
+    const candidate = participant.experimentalFullContext.autoCompactWindowTokens;
+    if (candidate < window) {
+      window = candidate;
+      constrainedBy = participant;
+    }
+  }
+  return { window, constrainedBy: constrainedBy.id };
+}
+
+export function underPromisedFullContextAgents(catalog) {
+  const models = modelMap(catalog);
+  return catalog.agents
+    .filter((agent) => agent.contextMode === "full")
+    .filter((agent) => models.get(agent.model).contextTokens < 1000000)
+    .map((agent) => agent.name);
+}
+
 export function parseLaunchArguments(values) {
   const normalized = [...values];
   if (normalized[0] === "--") normalized.shift();
@@ -33,9 +64,15 @@ async function main() {
   if (mode === "full") {
     if (!model.experimentalFullContext) throw new Error(`${modelId} has no full-context profile`);
     selected = model.experimentalFullContext.model;
-    env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = String(model.experimentalFullContext.autoCompactWindowTokens);
+    const { window, constrainedBy } = resolveFullContextWindow(catalog, model);
+    env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = String(window);
     env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = String(catalog.autoCompactPercent);
-    console.error(`context_mode=experimental model=${modelId} auto_compact_window=${env.CLAUDE_CODE_AUTO_COMPACT_WINDOW} percent=${env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE}`);
+    console.error(`context_mode=experimental model=${modelId} auto_compact_window=${window} constrained_by=${constrainedBy} percent=${env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE}`);
+  } else {
+    const underPromised = underPromisedFullContextAgents(catalog);
+    if (underPromised.length > 0) {
+      console.error(`context_warning mode=safe agents=${underPromised.join(",")} reason=raised-ceiling-without-process-compaction-window`);
+    }
   }
   const child = spawn("claude", ["--model", selected, ...claudeArgs], {
     env,

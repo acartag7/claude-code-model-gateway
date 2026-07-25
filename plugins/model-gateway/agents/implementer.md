@@ -1,7 +1,7 @@
 ---
 name: implementer
 description: "Implement an approved contract against frozen acceptance tests."
-model: zai/glm-5.2
+model: zai/glm-5.2[1m]
 effort: max
 ---
 

@@ -34,8 +34,10 @@ const AGENT_KEYS = new Set([
   "model",
   "effort",
   "tools",
+  "contextMode",
 ]);
 const EFFORTS = new Set(["low", "medium", "high", "xhigh", "max"]);
+const CONTEXT_MODES = new Set(["safe", "full"]);
 
 function fail(message) {
   throw new Error(`Invalid models.yaml: ${message}`);
@@ -140,6 +142,16 @@ export function validateCatalog(catalog) {
     requireString(agent.effort, `agents[${index}].effort`);
     if (!EFFORTS.has(agent.effort)) fail(`${name} has unsupported effort`);
     if (agent.tools !== undefined) requireStringArray(agent.tools, `agents[${index}].tools`);
+    if (agent.contextMode !== undefined) {
+      requireString(agent.contextMode, `agents[${index}].contextMode`);
+      if (!CONTEXT_MODES.has(agent.contextMode)) fail(`${name} has unsupported contextMode`);
+      if (agent.contextMode === "full") {
+        const target = catalog.models.find((candidate) => candidate.id === agent.model);
+        if (!target.experimentalFullContext) {
+          fail(`${name} requests full context but ${agent.model} has no experimentalFullContext profile`);
+        }
+      }
+    }
   }
 
   return catalog;

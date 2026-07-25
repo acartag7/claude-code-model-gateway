@@ -14,12 +14,20 @@ function escapeCell(value) {
   return String(value).replaceAll("|", "\\|");
 }
 
+function agentModelId(agent, model) {
+  // Claude Code derives a subagent's context budget from this ID alone; it reads
+  // no context metadata from the gateway catalog. `full` opts one agent into the
+  // experimental `[1m]` ceiling shim documented in docs/context-windows.md.
+  if (agent.contextMode === "full") return model.experimentalFullContext.model;
+  return model.claudeCodeModel;
+}
+
 function renderAgent(agent, model) {
   const lines = [
     "---",
     `name: ${agent.name}`,
     `description: ${JSON.stringify(agent.description)}`,
-    `model: ${model.claudeCodeModel}`,
+    `model: ${agentModelId(agent, model)}`,
     `effort: ${agent.effort}`,
   ];
   if (agent.tools) lines.push(`tools: ${agent.tools.join(", ")}`);

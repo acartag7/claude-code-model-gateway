@@ -22,14 +22,45 @@ test("generated settings enable auto-compaction", async () => {
   assert.equal(settings.autoCompactEnabled, true);
 });
 
-test("custom agents do not claim unsupported 1M context", async () => {
+test("custom agents do not claim unsupported 1M context without an explicit opt-in", async () => {
   const catalog = await loadCatalog(root);
   const files = renderFiles(catalog);
   for (const agent of catalog.agents) {
     const model = catalog.models.find((candidate) => candidate.id === agent.model);
     const generated = files.get(`.claude/agents/${agent.name}.md`);
-    if (model.provider !== "anthropic") assert.doesNotMatch(generated, /model: .*\[1m\]/);
+    if (model.provider === "anthropic") continue;
+    if (agent.contextMode === "full") continue;
+    assert.doesNotMatch(generated, /model: .*\[1m\]/);
   }
+});
+
+test("an agent opted into full context is generated with the experimental ceiling ID", async () => {
+  const source = await readFile(path.join(root, "models.yaml"), "utf8");
+  const parsed = YAML.parse(source);
+  const agent = parsed.agents.find((candidate) => candidate.contextMode === "full");
+  assert.ok(agent, "expected at least one agent opted into full context");
+  const model = parsed.models.find((candidate) => candidate.id === agent.model);
+  const files = renderFiles(parseCatalog(YAML.stringify(parsed)));
+  assert.match(
+    files.get(`.claude/agents/${agent.name}.md`),
+    new RegExp(`model: ${model.experimentalFullContext.model.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`),
+  );
+});
+
+test("full context is rejected for a model with no experimental profile", async () => {
+  const source = await readFile(path.join(root, "models.yaml"), "utf8");
+  const parsed = YAML.parse(source);
+  const model = parsed.models.find((candidate) => !candidate.experimentalFullContext);
+  parsed.agents[0].model = model.id;
+  parsed.agents[0].contextMode = "full";
+  assert.throws(() => parseCatalog(YAML.stringify(parsed)), /has no experimentalFullContext profile/);
+});
+
+test("an unsupported contextMode fails closed", async () => {
+  const source = await readFile(path.join(root, "models.yaml"), "utf8");
+  const parsed = YAML.parse(source);
+  parsed.agents[0].contextMode = "unlimited";
+  assert.throws(() => parseCatalog(YAML.stringify(parsed)), /unsupported contextMode/);
 });
 
 test("plugin agents match standalone agents and remain routing-only", async () => {

@@ -14,6 +14,15 @@ models:
     recommendedEffort: high
     roles: [hardest-synthesis, long-running-reasoning]
 
+  - id: claude-opus-5
+    name: Claude Opus 5
+    provider: anthropic
+    contextTokens: 1000000
+    contextEvidence: provider-docs
+    claudeCodeModel: claude-opus-5[1m]
+    recommendedEffort: xhigh
+    roles: [agentic-coding, long-horizon-implementation, code-review]
+
   - id: claude-opus-4-8
     name: Claude Opus 4.8
     provider: anthropic
@@ -55,6 +64,19 @@ models:
     roles: [general-implementation, integration-review]
     experimentalFullContext:
       model: gpt-5.6-terra[1m]
+      autoCompactWindowTokens: 272000
+      note: Unsupported Claude Code ceiling shim for a 272K upstream model.
+
+  - id: gpt-5.6-luna
+    name: GPT 5.6 Luna
+    provider: openai-codex
+    contextTokens: 272000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-5.6-luna
+    recommendedEffort: high
+    roles: [fast-coding, general-implementation]
+    experimentalFullContext:
+      model: gpt-5.6-luna[1m]
       autoCompactWindowTokens: 272000
       note: Unsupported Claude Code ceiling shim for a 272K upstream model.
 
@@ -131,6 +153,7 @@ agents:
     description: Implement an approved contract against frozen acceptance tests.
     model: zai/glm-5.2
     effort: max
+    contextMode: full
 
   - name: integration-reviewer
     description: Review wiring, runtime behavior, and cross-boundary integration against the exact commit.
