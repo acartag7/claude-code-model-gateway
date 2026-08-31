@@ -75,10 +75,11 @@ Required deterministic result:
 - generated files current
 - zero failed tests
 
-Preview local bootstrap before applying it:
+Preview local bootstrap, then choose one initial apply command:
 
 ```sh
 pnpm run bootstrap:local
+# Use this plain apply only when no API-key provider is needed.
 pnpm run bootstrap:local -- --apply
 ```
 
@@ -94,13 +95,21 @@ For Z.AI, require the human to provide `ZAI_API_KEY` through their secret
 manager, then use the documented `--with-zai` flow in `docs/setup.md`. Never
 place the key in a command argument, repository file, or shell history.
 
+For OpenCode Go, require the human to provide `OPENCODE_GO_API_KEY` through
+their secret manager, then use the documented `--with-opencode-go` flow in
+`docs/setup.md`. Put every required provider flag on the same initial apply;
+bootstrap refuses to overwrite an existing configuration. A selected provider
+with a missing or malformed key must fail before local state is created.
+
 Ask the human to run only the provider login commands they need:
 
 ```sh
-cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --claude-login
 cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --codex-login
 cliproxyapi --config "$HOME/.cli-proxy-api/config.yaml" --xai-login
 ```
+
+Do not use CLIProxyAPI's `--claude-login` option. Follow the Anthropic
+authentication boundary in `README.md` and `docs/setup.md`.
 
 Start CLIProxyAPI in a separate terminal:
 
@@ -191,7 +200,9 @@ When the operator adds or removes a model:
 
 1. Confirm the exact model ID from the authenticated `/v1/models` response or
    provider documentation.
-2. Edit only `models.yaml`.
+2. Edit only `models.yaml` for catalog metadata. If local bootstrap should map
+   a new API-key provider model, update its exact provider mapping and contract
+   test in `scripts/bootstrap-local.mjs` and `test/bootstrap-local.test.mjs`.
 3. Remove agents that reference an unavailable model or explicitly update them.
 4. Run `pnpm generate`.
 5. Review every generated diff.

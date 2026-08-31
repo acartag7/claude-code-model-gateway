@@ -16,6 +16,77 @@ test("catalog is valid and excludes image-only models", async () => {
   assert.equal(new Set(catalog.models.map((model) => model.id)).size, catalog.models.length);
 });
 
+test("GLM 5.3 Flash keeps its verified routing and context contract", async () => {
+  const catalog = await loadCatalog(root);
+  const model = catalog.models.find((candidate) => candidate.id === "zai/glm-5.3-flash");
+  assert.deepEqual(model, {
+    id: "zai/glm-5.3-flash",
+    name: "GLM 5.3 Flash",
+    provider: "zai",
+    contextTokens: 1000000,
+    contextEvidence: "provider-docs",
+    claudeCodeModel: "zai/glm-5.3-flash",
+    recommendedEffort: "max",
+    roles: ["fast-implementation", "general-engineering"],
+    experimentalFullContext: {
+      model: "zai/glm-5.3-flash[1m]",
+      autoCompactWindowTokens: 1000000,
+      note: "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim.",
+    },
+  });
+});
+
+test("selected OpenCode Go models keep their verified routing contracts", async () => {
+  const catalog = await loadCatalog(root);
+  const selected = Object.fromEntries(
+    catalog.models
+      .filter((model) => model.provider === "opencode-go")
+      .map((model) => [model.id, model]),
+  );
+  assert.deepEqual(selected, {
+    "hy4-preview": {
+      id: "hy4-preview",
+      name: "Hunyuan Hy4 Preview",
+      provider: "opencode-go",
+      contextTokens: 1000000,
+      contextEvidence: "provider-docs",
+      claudeCodeModel: "hy4-preview",
+      recommendedEffort: "high",
+      roles: ["experimental-coding", "long-context-evaluation"],
+      experimentalFullContext: {
+        model: "hy4-preview[1m]",
+        autoCompactWindowTokens: 1000000,
+        note: "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim.",
+      },
+    },
+    "kimi-k2.7-code": {
+      id: "kimi-k2.7-code",
+      name: "Kimi K2.7 Code",
+      provider: "opencode-go",
+      contextTokens: 262144,
+      contextEvidence: "provider-docs",
+      claudeCodeModel: "kimi-k2.7-code",
+      recommendedEffort: "high",
+      roles: ["coding-implementation", "repository-work"],
+    },
+    "longcat-2.0": {
+      id: "longcat-2.0",
+      name: "LongCat 2.0",
+      provider: "opencode-go",
+      contextTokens: 1000000,
+      contextEvidence: "provider-docs",
+      claudeCodeModel: "longcat-2.0",
+      recommendedEffort: "high",
+      roles: ["long-context-coding", "repository-exploration"],
+      experimentalFullContext: {
+        model: "longcat-2.0[1m]",
+        autoCompactWindowTokens: 1000000,
+        note: "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim.",
+      },
+    },
+  });
+});
+
 test("generated settings enable auto-compaction", async () => {
   const files = renderFiles(await loadCatalog(root));
   const settings = JSON.parse(files.get("generated/claude-settings.json"));

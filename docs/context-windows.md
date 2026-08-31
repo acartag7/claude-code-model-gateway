@@ -10,7 +10,7 @@ That creates two different numbers for custom models:
 - Claude Code client budget: what Claude Code believes the model accepts.
 
 Unknown custom IDs receive the conservative 200K client budget. This is safe,
-but it underuses GPT 272K, Grok 500K, and GLM 1M windows.
+but it underuses GPT 272K, Grok 500K, and several 1M windows.
 
 ## Safe mode
 
@@ -36,21 +36,26 @@ Claude Code process. Use separate processes when full context matters.
 
 A subagent's budget comes from the model ID in its generated frontmatter and
 nothing else. Claude Code reads no context metadata from the gateway catalog, so
-a subagent pinned to a bare custom ID such as `zai/glm-5.2` is budgeted at 200K
-even though the upstream model accepts 1M.
+a subagent pinned to a bare custom ID such as `zai/glm-5.3-flash` is budgeted at
+200K even though the upstream model accepts 1M.
 
 Set `contextMode: full` on an agent in `models.yaml` to generate it with the
 model's `experimentalFullContext` ID instead. The catalog rejects `full` for any
 model that has no experimental profile, and agents default to `safe`.
 
-Only opt in where the ceiling is truthful. GLM 5.2 accepts 1M upstream, so
-`zai/glm-5.2[1m]` is accurate. A 272K or 500K model under the same shim claims a
-window its provider will reject, and because the compaction threshold is
-process-wide, one Claude Code process cannot give such an agent a truthful
-threshold while another agent uses a different window.
+Only opt in where the ceiling is truthful. GLM 5.2, GLM 5.3 Flash, Hunyuan Hy4
+Preview, and LongCat 2.0 accept 1M upstream, so their `[1m]` model IDs are
+accurate. A 272K or 500K model under the same shim claims a window its provider
+will reject. The compaction threshold is process-wide, so one Claude Code
+process cannot give such an agent a truthful threshold while another agent uses
+a different window.
 
 Sources:
 
 - <https://code.claude.com/docs/en/llm-gateway-protocol>
 - <https://code.claude.com/docs/en/model-config>
 - <https://code.claude.com/docs/en/env-vars>
+- <https://docs.z.ai/guides/vlm/glm-5.3-flash>
+- <https://github.com/Tencent-Hunyuan/Hy4-preview>
+- <https://huggingface.co/moonshotai/Kimi-K2.7-Code>
+- <https://longcat.ai/blog/longcat-2.0/>

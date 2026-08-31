@@ -40,7 +40,8 @@ Preview first:
 pnpm run bootstrap:local
 ```
 
-The preview creates nothing. Apply once:
+The preview creates nothing. If you do not need an API-key provider, apply
+once:
 
 ```sh
 pnpm run bootstrap:local -- --apply
@@ -68,8 +69,8 @@ CLIProxyAPI must keep the same gateway key in its runtime config, so that file
 contains the key in plaintext. OAuth token files are also provider credentials.
 Protect `~/.cli-proxy-api` as sensitive local state.
 
-To include Z.AI at bootstrap, first place your Z.AI key in `ZAI_API_KEY` using
-your secret manager, then run:
+To include Z.AI, use its flag on the initial apply instead. First place your
+Z.AI key in `ZAI_API_KEY` using your secret manager, then run:
 
 ```sh
 test -n "$ZAI_API_KEY"
@@ -78,7 +79,32 @@ unset ZAI_API_KEY
 ```
 
 The key is read from the process environment and is never printed. Do not put
-it in this repository or shell history.
+it in this repository or shell history. The generated CLIProxyAPI configuration
+maps both `zai/glm-5.2` and `zai/glm-5.3-flash` to the Z.AI Coding Plan endpoint.
+
+To include the selected OpenCode Go models, use its flag on the initial apply.
+Place the subscription key in `OPENCODE_GO_API_KEY` through your secret manager,
+then run:
+
+```sh
+test -n "$OPENCODE_GO_API_KEY"
+pnpm run bootstrap:local -- --apply --with-opencode-go
+unset OPENCODE_GO_API_KEY
+```
+
+This maps `hy4-preview`, `kimi-k2.7-code`, and `longcat-2.0` to the OpenCode Go
+endpoint. To configure both API-key providers, set both environment variables
+and use both flags in the same initial apply command:
+
+```sh
+test -n "$ZAI_API_KEY" && test -n "$OPENCODE_GO_API_KEY"
+pnpm run bootstrap:local -- --apply --with-zai --with-opencode-go
+unset ZAI_API_KEY OPENCODE_GO_API_KEY
+```
+
+Bootstrap is intentionally one-time and refuses to overwrite its configuration.
+Selecting either provider with a missing, blank, malformed, or oversized key
+fails before the bootstrap writes any local state.
 
 ## 3. Authenticate providers
 
@@ -235,5 +261,6 @@ Official references:
 - <https://help.router-for.me/configuration/provider/claude-code>
 - <https://help.router-for.me/configuration/provider/codex>
 - <https://help.router-for.me/configuration/provider/xai>
+- <https://opencode.ai/docs/go/>
 - <https://code.claude.com/docs/en/installation>
 - <https://code.claude.com/docs/en/llm-gateway>

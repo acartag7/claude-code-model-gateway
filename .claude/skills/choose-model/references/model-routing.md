@@ -19,6 +19,10 @@ budget in safe mode even when the upstream context is larger.
 | Grok 4.5 | `grok-4.5` | high | 500,000 | independent-review, cross-family-reasoning | provider-docs |
 | Grok Composer 2.5 Fast | `grok-composer-2.5-fast` | high | 200,000 | fast-exploration, narrow-mechanical-work | conservative-unverified |
 | GLM 5.2 | `zai/glm-5.2` | max | 1,000,000 | implementation, large-repository-work | environment-verified |
+| GLM 5.3 Flash | `zai/glm-5.3-flash` | max | 1,000,000 | fast-implementation, general-engineering | provider-docs |
+| Hunyuan Hy4 Preview | `hy4-preview` | high | 1,000,000 | experimental-coding, long-context-evaluation | provider-docs |
+| Kimi K2.7 Code | `kimi-k2.7-code` | high | 262,144 | coding-implementation, repository-work | provider-docs |
+| LongCat 2.0 | `longcat-2.0` | high | 1,000,000 | long-context-coding, repository-exploration | provider-docs |
 
 Default fallback: `claude-opus-4-8[1m]`.
 

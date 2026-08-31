@@ -97,6 +97,42 @@
         "autoCompactWindowTokens": 1000000,
         "note": "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim."
       }
+    },
+    "zai/glm-5.3-flash": {
+      "safeModel": "zai/glm-5.3-flash",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "max",
+      "experimentalFullContext": {
+        "model": "zai/glm-5.3-flash[1m]",
+        "autoCompactWindowTokens": 1000000,
+        "note": "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim."
+      }
+    },
+    "hy4-preview": {
+      "safeModel": "hy4-preview",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": {
+        "model": "hy4-preview[1m]",
+        "autoCompactWindowTokens": 1000000,
+        "note": "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim."
+      }
+    },
+    "kimi-k2.7-code": {
+      "safeModel": "kimi-k2.7-code",
+      "upstreamContextTokens": 262144,
+      "recommendedEffort": "high",
+      "experimentalFullContext": null
+    },
+    "longcat-2.0": {
+      "safeModel": "longcat-2.0",
+      "upstreamContextTokens": 1000000,
+      "recommendedEffort": "high",
+      "experimentalFullContext": {
+        "model": "longcat-2.0[1m]",
+        "autoCompactWindowTokens": 1000000,
+        "note": "The upstream is 1M; Claude Code still treats this custom ID as 200K without a ceiling shim."
+      }
     }
   }
 }
