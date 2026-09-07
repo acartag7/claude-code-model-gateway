@@ -14,6 +14,15 @@ models:
     recommendedEffort: high
     roles: [hardest-synthesis, long-running-reasoning]
 
+  - id: claude-fable-5-1
+    name: Claude Fable 5.1
+    provider: anthropic
+    contextTokens: 1000000
+    contextEvidence: provider-docs
+    claudeCodeModel: claude-fable-5-1[1m]
+    recommendedEffort: high
+    roles: [hardest-synthesis, long-running-reasoning, multistep-research]
+
   - id: claude-opus-5
     name: Claude Opus 5
     provider: anthropic
@@ -40,6 +49,32 @@ models:
     claudeCodeModel: claude-sonnet-5[1m]
     recommendedEffort: high
     roles: [daily-engineering, orchestration]
+
+  - id: gpt-6-astra
+    name: GPT 6.0 Astra
+    provider: openai-codex
+    contextTokens: 272000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-6-astra
+    recommendedEffort: xhigh
+    roles: [hardest-synthesis, complex-implementation, computer-use]
+    experimentalFullContext:
+      model: gpt-6-astra[1m]
+      autoCompactWindowTokens: 272000
+      note: Unsupported Claude Code ceiling shim for a 272K upstream model.
+
+  - id: gpt-daybreak-blue-latest
+    name: Daybreak Blue
+    provider: openai-codex
+    contextTokens: 272000
+    contextEvidence: account-catalog
+    claudeCodeModel: gpt-daybreak-blue-latest
+    recommendedEffort: high
+    roles: [defensive-security, security-review, adversarial-review]
+    experimentalFullContext:
+      model: gpt-daybreak-blue-latest[1m]
+      autoCompactWindowTokens: 272000
+      note: Unsupported Claude Code ceiling shim for a 272K upstream model.
 
   - id: gpt-5.6-sol
     name: GPT 5.6 Sol

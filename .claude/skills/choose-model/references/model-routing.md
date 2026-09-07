@@ -8,9 +8,12 @@ budget in safe mode even when the upstream context is larger.
 | Model | Claude Code value | Effort | Upstream context | Best for | Evidence |
 |---|---|---:|---:|---|---|
 | Claude Fable 5 | `claude-fable-5[1m]` | high | 1,000,000 | hardest-synthesis, long-running-reasoning | provider-docs |
+| Claude Fable 5.1 | `claude-fable-5-1[1m]` | high | 1,000,000 | hardest-synthesis, long-running-reasoning, multistep-research | provider-docs |
 | Claude Opus 5 | `claude-opus-5[1m]` | xhigh | 1,000,000 | agentic-coding, long-horizon-implementation, code-review | provider-docs |
 | Claude Opus 4.8 | `claude-opus-4-8[1m]` | xhigh | 1,000,000 | contract-review, security-review, adversarial-review | provider-docs |
 | Claude Sonnet 5 | `claude-sonnet-5[1m]` | high | 1,000,000 | daily-engineering, orchestration | provider-docs |
+| GPT 6.0 Astra | `gpt-6-astra` | xhigh | 272,000 | hardest-synthesis, complex-implementation, computer-use | account-catalog |
+| Daybreak Blue | `gpt-daybreak-blue-latest` | high | 272,000 | defensive-security, security-review, adversarial-review | account-catalog |
 | GPT 5.6 Sol | `gpt-5.6-sol` | xhigh | 272,000 | acceptance-design, complex-implementation, research | account-catalog |
 | GPT 5.6 Terra | `gpt-5.6-terra` | high | 272,000 | general-implementation, integration-review | account-catalog |
 | GPT 5.6 Luna | `gpt-5.6-luna` | high | 272,000 | fast-coding, general-implementation | account-catalog |
