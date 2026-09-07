@@ -5,3 +5,10 @@ node_modules/
 runtime/
 *.log
 .DS_Store
+
+# Internal project analysis. These are working notes, not repository content;
+# they belong in the project's memory folder. Ignored so a broad `git add`
+# cannot sweep them into a public commit again.
+PROJECT_AUDIT-*.md
+PROJECT_FACTS-*.md
+DISTRIBUTION_EXPERIMENT-*.md
