@@ -1,6 +1,7 @@
 # Claude Code Model Gateway
 
-Use your Claude, Codex, GLM, and Grok accounts from one Claude Code setup.
+Use your Claude, Codex, GLM, Grok, and OpenCode Go accounts from one Claude
+Code setup.
 
 This repository turns [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)
 into a predictable model gateway for Claude Code. It gives every model an exact
@@ -92,7 +93,9 @@ pnpm verify
 ```
 
 Create a local, loopback-only gateway configuration. The first command is a
-preview; the second applies it.
+preview; the second applies it when you do not need an API-key provider. Z.AI
+and OpenCode Go flags must be included on this one-time apply; see the
+[complete setup guide](docs/setup.md).
 
 ```sh
 pnpm run bootstrap:local
@@ -152,7 +155,8 @@ Then launch Claude Code with an exact model:
 ```sh
 pnpm run launch -- safe claude-opus-4-8
 pnpm run launch -- safe gpt-5.6-sol
-pnpm run launch -- safe zai/glm-5.2
+pnpm run launch -- safe zai/glm-5.3-flash
+pnpm run launch -- safe kimi-k2.7-code
 ```
 
 Each launch also applies the model's `recommendedEffort` from the catalog, so the
@@ -171,8 +175,9 @@ otherwise:
   dropped for model ids Claude Code does not recognise, which is every
   gateway-custom id in the catalog.
 
-The [complete setup guide](docs/setup.md) includes Z.AI configuration,
-isolated-profile testing, expected output, remote gateways, and rollback.
+The [complete setup guide](docs/setup.md) includes Z.AI and OpenCode Go
+configuration, isolated-profile testing, expected output, remote gateways, and
+rollback.
 
 ## Included model catalog
 
@@ -184,7 +189,8 @@ depends on the accounts authenticated in CLIProxyAPI.
 | Anthropic | Claude Fable 5, Claude Opus 5, Claude Opus 4.8, Claude Sonnet 5 |
 | OpenAI Codex | GPT 5.3 Codex Spark, GPT 5.5, GPT 5.6 Luna, GPT 5.6 Sol, GPT 5.6 Terra |
 | xAI | Grok 4.5, Grok Composer 2.5 Fast |
-| Z.AI | GLM 5.2 |
+| Z.AI | GLM 5.2, GLM 5.3 Flash |
+| OpenCode Go | Hunyuan Hy4 Preview, Kimi K2.7 Code, LongCat 2.0 |
 
 Edit only [`models.yaml`](models.yaml) when changing the catalog, then run:
 

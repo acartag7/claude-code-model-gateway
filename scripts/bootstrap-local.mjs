@@ -11,13 +11,20 @@ const KEYCHAIN_SERVICE = "claude-code-model-gateway-api-key";
 
 function parseArguments(values) {
   const normalized = values.filter((value) => value !== "--");
-  const allowed = new Set(["--apply", "--help", "--no-keychain", "--with-zai"]);
+  const allowed = new Set([
+    "--apply",
+    "--help",
+    "--no-keychain",
+    "--with-opencode-go",
+    "--with-zai",
+  ]);
   const unknown = normalized.filter((value) => !allowed.has(value));
   if (unknown.length) throw new Error(`Unknown arguments: ${unknown.join(", ")}`);
   return {
     apply: normalized.includes("--apply"),
     help: normalized.includes("--help"),
     noKeychain: normalized.includes("--no-keychain"),
+    withOpenCodeGo: normalized.includes("--with-opencode-go"),
     withZai: normalized.includes("--with-zai"),
   };
 }
@@ -28,7 +35,25 @@ function requireRecord(value, label) {
   }
 }
 
-export function buildLocalConfig(template, { authDir, gatewayKey, zaiKey }) {
+function optionalProviderKey(enabled, value, environmentName, optionName) {
+  if (!enabled) return undefined;
+  if (
+    typeof value !== "string"
+    || value.length < 16
+    || value.length > 2048
+    || !/^[\x21-\x7E]+$/.test(value)
+  ) {
+    throw new Error(`${environmentName} has an invalid format with ${optionName}`);
+  }
+  return value;
+}
+
+export function buildLocalConfig(template, {
+  authDir,
+  gatewayKey,
+  openCodeGoKey,
+  zaiKey,
+}) {
   requireRecord(template, "CLIProxy template");
   if (template.host !== "127.0.0.1" || template.port !== 8317) {
     throw new Error("CLIProxy template must remain bound to 127.0.0.1:8317");
@@ -36,23 +61,68 @@ export function buildLocalConfig(template, { authDir, gatewayKey, zaiKey }) {
   if (!Array.isArray(template["api-keys"]) || template["api-keys"].length !== 0) {
     throw new Error("CLIProxy template must not contain an API key");
   }
+  if (template["openai-compatibility"] !== undefined) {
+    throw new Error("CLIProxy template must not contain provider credentials");
+  }
   const config = structuredClone(template);
   config["auth-dir"] = authDir;
   config["api-keys"] = [gatewayKey];
+  const providers = [];
   if (zaiKey !== undefined) {
-    config["openai-compatibility"] = [{
+    providers.push({
       name: "zai",
       prefix: "zai",
       "base-url": "https://api.z.ai/api/coding/paas/v4",
       "api-key-entries": [{ "api-key": zaiKey }],
-      models: [{
-        name: "glm-5.2",
-        alias: "glm-5.2",
-        "display-name": "GLM 5.2",
-        thinking: { levels: ["high", "max"] },
-      }],
-    }];
+      models: [
+        {
+          name: "glm-5.2",
+          alias: "glm-5.2",
+          "display-name": "GLM 5.2",
+          thinking: { levels: ["high", "max"] },
+        },
+        {
+          name: "glm-5.3-flash",
+          alias: "glm-5.3-flash",
+          "display-name": "GLM 5.3 Flash",
+          thinking: { levels: ["low", "high", "max"] },
+        },
+      ],
+    });
   }
+  if (openCodeGoKey !== undefined) {
+    providers.push({
+      name: "opencode-go",
+      "base-url": "https://opencode.ai/zen/go/v1",
+      // OpenCode Go refuses a request without this header with
+      // 400 MissingSessionID. It is not optional: without it every model in
+      // this block fails, so a generated config that omits it is broken on
+      // arrival. CLIProxyAPI can only send a fixed string here, and the
+      // provider asks for a stable id per conversation, so this satisfies the
+      // requirement while leaving their routing and prompt caching
+      // unoptimised.
+      headers: { "x-opencode-session": "claude-code-model-gateway" },
+      "api-key-entries": [{ "api-key": openCodeGoKey }],
+      models: [
+        {
+          name: "hy4-preview",
+          alias: "hy4-preview",
+          "display-name": "Hunyuan Hy4 Preview",
+        },
+        {
+          name: "kimi-k2.7-code",
+          alias: "kimi-k2.7-code",
+          "display-name": "Kimi K2.7 Code",
+        },
+        {
+          name: "longcat-2.0",
+          alias: "longcat-2.0",
+          "display-name": "LongCat 2.0",
+        },
+      ],
+    });
+  }
+  if (providers.length > 0) config["openai-compatibility"] = providers;
   return config;
 }
 
@@ -112,10 +182,11 @@ function deleteKeychainSecret(account) {
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   if (options.help) {
-    console.log("Usage: pnpm run bootstrap:local -- [--apply] [--with-zai] [--no-keychain]");
-    console.log("  --apply        Write the config after validation; default is dry-run");
-    console.log("  --with-zai     Read ZAI_API_KEY and add the Z.AI GLM provider");
-    console.log("  --no-keychain  Disable Keychain storage for isolated automated tests only");
+    console.log("Usage: pnpm run bootstrap:local -- [--apply] [--with-zai] [--with-opencode-go] [--no-keychain]");
+    console.log("  --apply             Write the config after validation; default is dry-run");
+    console.log("  --with-zai          Read ZAI_API_KEY and add the Z.AI GLM provider");
+    console.log("  --with-opencode-go  Read OPENCODE_GO_API_KEY and add selected OpenCode Go models");
+    console.log("  --no-keychain       Disable Keychain storage for isolated automated tests only");
     console.log("  CLIPROXY_CONFIG_DIR overrides the default ~/.cli-proxy-api target");
     return;
   }
@@ -131,16 +202,24 @@ async function main() {
   const templateText = await readFile(path.join(root, "config", "cliproxy.example.yaml"), "utf8");
   const template = YAML.parse(templateText);
   const gatewayKey = randomBytes(48).toString("base64url");
-  const zaiKey = options.withZai ? process.env.ZAI_API_KEY : undefined;
-  if (options.withZai && (
-    typeof zaiKey !== "string"
-    || zaiKey.length < 16
-    || zaiKey.length > 2048
-    || !/^[\x21-\x7E]+$/.test(zaiKey)
-  )) {
-    throw new Error("ZAI_API_KEY has an invalid format with --with-zai");
-  }
-  const config = buildLocalConfig(template, { authDir, gatewayKey, zaiKey });
+  const zaiKey = optionalProviderKey(
+    options.withZai,
+    process.env.ZAI_API_KEY,
+    "ZAI_API_KEY",
+    "--with-zai",
+  );
+  const openCodeGoKey = optionalProviderKey(
+    options.withOpenCodeGo,
+    process.env.OPENCODE_GO_API_KEY,
+    "OPENCODE_GO_API_KEY",
+    "--with-opencode-go",
+  );
+  const config = buildLocalConfig(template, {
+    authDir,
+    gatewayKey,
+    openCodeGoKey,
+    zaiKey,
+  });
   const contents = YAML.stringify(config, { lineWidth: 0 });
   YAML.parse(contents);
 
