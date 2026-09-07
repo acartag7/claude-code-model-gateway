@@ -94,6 +94,14 @@ export function buildLocalConfig(template, {
     providers.push({
       name: "opencode-go",
       "base-url": "https://opencode.ai/zen/go/v1",
+      // OpenCode Go refuses a request without this header with
+      // 400 MissingSessionID. It is not optional: without it every model in
+      // this block fails, so a generated config that omits it is broken on
+      // arrival. CLIProxyAPI can only send a fixed string here, and the
+      // provider asks for a stable id per conversation, so this satisfies the
+      // requirement while leaving their routing and prompt caching
+      // unoptimised.
+      headers: { "x-opencode-session": "claude-code-model-gateway" },
       "api-key-entries": [{ "api-key": openCodeGoKey }],
       models: [
         {

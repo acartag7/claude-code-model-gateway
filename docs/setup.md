@@ -93,7 +93,14 @@ unset OPENCODE_GO_API_KEY
 ```
 
 This maps `hy4-preview`, `kimi-k2.7-code`, and `longcat-2.0` to the OpenCode Go
-endpoint. To configure both API-key providers, set both environment variables
+endpoint.
+
+The generated provider block sets an `x-opencode-session` header. OpenCode Go
+rejects any request without it with `400 MissingSessionID`, so a configuration
+that omits the header cannot reach any of these three models. CLIProxyAPI sends
+a fixed value, while the provider asks for a stable id per conversation — that
+meets the requirement but leaves their routing and prompt caching unoptimised.
+If you edit the generated config by hand, keep the header. To configure both API-key providers, set both environment variables
 and use both flags in the same initial apply command:
 
 ```sh

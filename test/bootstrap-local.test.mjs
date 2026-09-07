@@ -87,6 +87,11 @@ test("API-key providers are added only when their keys are explicitly supplied",
     openCodeGoKey,
   });
   assert.equal(withOpenCodeGo["openai-compatibility"][0].name, "opencode-go");
+  // OpenCode Go answers 400 MissingSessionID without this header, so a config
+  // generated without it cannot reach a single one of the models below.
+  assert.deepEqual(withOpenCodeGo["openai-compatibility"][0].headers, {
+    "x-opencode-session": "claude-code-model-gateway",
+  });
   assert.equal(
     withOpenCodeGo["openai-compatibility"][0]["api-key-entries"][0]["api-key"],
     openCodeGoKey,
