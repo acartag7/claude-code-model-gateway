@@ -1,61 +1,63 @@
 # Context windows in Claude Code gateways
 
 Claude Code does not read context metadata from a gateway model catalog. Model
-discovery reads only `id` and optional `display_name`, and it ignores discovered
-IDs that do not start with `claude` or `anthropic`.
+discovery keeps only `id`, `display_name`, and `description`, and keeps an
+entry only when its `id` contains `claude` or `anthropic` (case-insensitive,
+anywhere in the string — the older startswith behavior changed in Claude Code
+v2.1.223).
 
 That creates two different numbers for custom models:
 
 - Upstream context: what the provider actually accepts.
 - Claude Code client budget: what Claude Code believes the model accepts.
 
-Unknown custom IDs receive the conservative 200K client budget. This is safe,
-but it underuses GPT 272K, Grok 500K, and several 1M windows.
+## How budgets are decided now
 
-## Safe mode
+Claude Code 2.1.273 resolves a model's window in this order:
 
-Use exact model IDs and enable auto-compaction. Accept the 200K Claude Code
-budget for non-Claude models. This is the default in this repository.
+1. **Claude-family ids** are budgeted natively, including `[1m]` suffixes.
+2. **`CLAUDE_CODE_MAX_CONTEXT_TOKENS`** applies to any id Claude Code does not
+   recognize — one process-wide value for the main model and every
+   unrecognized-id subagent in the process.
+3. Otherwise a custom id is budgeted at a conservative **200K**.
 
-## Experimental full-context mode
+This repository's launcher sets that variable from the catalog:
 
-The `full` launcher profile appends `[1m]` so Claude Code raises its client
-ceiling, then sets `CLAUDE_CODE_AUTO_COMPACT_WINDOW` to the upstream model's
-known capacity. Claude Code strips the suffix before sending the model ID.
+- **Claude models** launch with their native `[1m]` ids and never receive the
+  variable. Pairing it with a recognized id would mis-budget same-process
+  custom-model subagents.
+- **Custom models** launch with bare ids, and the launcher sets
+  `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to the model's real `contextTokens` from
+  `models.yaml` — clamped to the smallest non-Claude agent installed by the
+  catalog, because the value is process-wide and a larger value would make a
+  smaller-window agent claim a window its provider rejects.
 
-Anthropic documents `[1m]` for models that genuinely support a 1M window. Using
-it as a ceiling for 272K or 500K custom models is unsupported. Claude Code may
-change this behavior, and its status display will still show 1M rather than the
-actual upstream context.
+There is no separate safe/full mode anymore; the old
+`experimentalFullContext` `[1m]` shims and `contextMode` agent opt-ins are
+removed from the schema. The `[1m]` suffix remains in use only where it is
+truthful: Claude models that genuinely support a 1M window.
 
-The compaction environment variable is process-wide. Concurrent subagents with
-different upstream windows cannot each receive a truthful threshold in one
-Claude Code process. Use separate processes when full context matters.
+## Measured, not guessed
+
+`contextTokens` values come from the provider registry the gateway runs on, or
+provider documentation. `contextEvidence` records the source class
+(`provider-docs`, `embedded-registry`, `provider-catalog-fallback`,
+`unverified-default`). Models with `unverified-default` claim the safe 200K
+until a real long-context request measures the true window.
 
 ## Subagent context budgets
 
 A subagent's budget comes from the model ID in its generated frontmatter and
-nothing else. Claude Code reads no context metadata from the gateway catalog, so
-a subagent pinned to a bare custom ID such as `zai/glm-5.3-flash` is budgeted at
-200K even though the upstream model accepts 1M.
+the process-wide `CLAUDE_CODE_MAX_CONTEXT_TOKENS` value, nothing else. Claude
+Code reads no context metadata from the gateway catalog.
 
-Set `contextMode: full` on an agent in `models.yaml` to generate it with the
-model's `experimentalFullContext` ID instead. The catalog rejects `full` for any
-model that has no experimental profile, and agents default to `safe`.
-
-Only opt in where the ceiling is truthful. GLM 5.2, GLM 5.3 Flash, Hunyuan Hy4
-Preview, and LongCat 2.0 accept 1M upstream, so their `[1m]` model IDs are
-accurate. A 272K or 500K model under the same shim claims a window its provider
-will reject. The compaction threshold is process-wide, so one Claude Code
-process cannot give such an agent a truthful threshold while another agent uses
-a different window.
+Consequence: concurrent subagents on different custom models cannot each get
+a truthful window in one Claude Code process. The launcher's clamp is the
+mitigation — no installed agent claims more than the process value allows.
+Use separate processes when per-agent windows matter.
 
 Sources:
 
 - <https://code.claude.com/docs/en/llm-gateway-protocol>
 - <https://code.claude.com/docs/en/model-config>
 - <https://code.claude.com/docs/en/env-vars>
-- <https://docs.z.ai/guides/vlm/glm-5.3-flash>
-- <https://github.com/Tencent-Hunyuan/Hy4-preview>
-- <https://huggingface.co/moonshotai/Kimi-K2.7-Code>
-- <https://longcat.ai/blog/longcat-2.0/>

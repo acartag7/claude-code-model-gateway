@@ -1,7 +1,7 @@
 ---
 name: spec-critic
 description: "Find contract ambiguity, unsafe gaps, and acceptance-test omissions before implementation starts."
-model: claude-opus-4-8[1m]
+model: claude-opus-5[1m]
 effort: xhigh
 tools: Read, Grep, Glob
 ---

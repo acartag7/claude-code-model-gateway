@@ -221,7 +221,7 @@ When the operator adds or removes a model:
   authenticated catalog. Do not fabricate aliases.
 - provider auth failure: reauthenticate that provider. Do not silently route to
   another model.
-- context mismatch: return to safe mode. Do not raise a client limit without
+- context mismatch: keep the catalog's contextTokens truthful. Do not raise a client limit without
   evidence for the upstream limit.
 
 ## Completion report

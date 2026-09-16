@@ -6,7 +6,6 @@ const MAX_CATALOG_BYTES = 256 * 1024;
 const ROOT_KEYS = new Set([
   "version",
   "fallbackModel",
-  "safeCustomContextTokens",
   "autoCompactEnabled",
   "autoCompactPercent",
   "models",
@@ -21,12 +20,6 @@ const MODEL_KEYS = new Set([
   "claudeCodeModel",
   "recommendedEffort",
   "roles",
-  "experimentalFullContext",
-]);
-const EXPERIMENT_KEYS = new Set([
-  "model",
-  "autoCompactWindowTokens",
-  "note",
 ]);
 const AGENT_KEYS = new Set([
   "name",
@@ -34,11 +27,8 @@ const AGENT_KEYS = new Set([
   "model",
   "effort",
   "tools",
-  "contextMode",
 ]);
 const EFFORTS = new Set(["low", "medium", "high", "xhigh", "max"]);
-const CONTEXT_MODES = new Set(["safe", "full"]);
-
 function fail(message) {
   throw new Error(`Invalid models.yaml: ${message}`);
 }
@@ -87,7 +77,6 @@ export function validateCatalog(catalog) {
   rejectUnknown(catalog, ROOT_KEYS, "root");
   if (catalog.version !== 1) fail("version must be 1");
   requireString(catalog.fallbackModel, "fallbackModel", /^[a-z0-9][a-z0-9./_-]*$/);
-  requireInteger(catalog.safeCustomContextTokens, "safeCustomContextTokens", 1000);
   if (catalog.autoCompactEnabled !== true) fail("autoCompactEnabled must be true");
   requireInteger(catalog.autoCompactPercent, "autoCompactPercent", 1);
   if (catalog.autoCompactPercent > 100) fail("autoCompactPercent must not exceed 100");
@@ -113,18 +102,6 @@ export function validateCatalog(catalog) {
     requireString(model.recommendedEffort, `models[${index}].recommendedEffort`);
     if (!EFFORTS.has(model.recommendedEffort)) fail(`${id} has unsupported recommendedEffort`);
     requireStringArray(model.roles, `models[${index}].roles`);
-    if (model.experimentalFullContext !== undefined) {
-      assertRecord(model.experimentalFullContext, `${id}.experimentalFullContext`);
-      rejectUnknown(model.experimentalFullContext, EXPERIMENT_KEYS, `${id}.experimentalFullContext`);
-      requireString(model.experimentalFullContext.model, `${id}.experimentalFullContext.model`, /^[a-z0-9][a-z0-9./_\[\]-]*$/);
-      const window = requireInteger(
-        model.experimentalFullContext.autoCompactWindowTokens,
-        `${id}.experimentalFullContext.autoCompactWindowTokens`,
-        1000,
-      );
-      if (window > model.contextTokens) fail(`${id} experimental window exceeds upstream context`);
-      requireString(model.experimentalFullContext.note, `${id}.experimentalFullContext.note`);
-    }
   }
   if (!modelIds.has(catalog.fallbackModel)) fail("fallbackModel does not exist");
   if (modelIds.has("gpt-image-2")) fail("gpt-image-2 is not an agent model and must not be routed");
@@ -142,16 +119,6 @@ export function validateCatalog(catalog) {
     requireString(agent.effort, `agents[${index}].effort`);
     if (!EFFORTS.has(agent.effort)) fail(`${name} has unsupported effort`);
     if (agent.tools !== undefined) requireStringArray(agent.tools, `agents[${index}].tools`);
-    if (agent.contextMode !== undefined) {
-      requireString(agent.contextMode, `agents[${index}].contextMode`);
-      if (!CONTEXT_MODES.has(agent.contextMode)) fail(`${name} has unsupported contextMode`);
-      if (agent.contextMode === "full") {
-        const target = catalog.models.find((candidate) => candidate.id === agent.model);
-        if (!target.experimentalFullContext) {
-          fail(`${name} requests full context but ${agent.model} has no experimentalFullContext profile`);
-        }
-      }
-    }
   }
 
   return catalog;

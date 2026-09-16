@@ -3,7 +3,7 @@
 Use exact model IDs in commands and subagent frontmatter:
 
 ```sh
-pnpm run launch -- safe gpt-5.6-sol
+pnpm run launch -- gpt-5.6-sol
 ```
 
 ```yaml

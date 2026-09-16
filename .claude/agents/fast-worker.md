@@ -1,7 +1,7 @@
 ---
 name: fast-worker
 description: "Handle narrow, mechanical coding tasks where latency matters more than broad synthesis."
-model: gpt-5.3-codex-spark
+model: grok-composer-2.5-fast
 effort: high
 ---
 
