@@ -67,30 +67,6 @@
       "recommendedEffort": "high",
       "contextPolicy": "max-context-tokens"
     },
-    "cursor-grok-4.6-xhigh": {
-      "model": "cursor-grok-4.6-xhigh",
-      "upstreamContextTokens": 500000,
-      "recommendedEffort": "high",
-      "contextPolicy": "max-context-tokens"
-    },
-    "kimi-k3-max": {
-      "model": "kimi-k3-max",
-      "upstreamContextTokens": 1048576,
-      "recommendedEffort": "high",
-      "contextPolicy": "max-context-tokens"
-    },
-    "gemini-3.8-flash-high": {
-      "model": "gemini-3.8-flash-high",
-      "upstreamContextTokens": 1048576,
-      "recommendedEffort": "high",
-      "contextPolicy": "max-context-tokens"
-    },
-    "muse-spark-1.3-max": {
-      "model": "muse-spark-1.3-max",
-      "upstreamContextTokens": 200000,
-      "recommendedEffort": "high",
-      "contextPolicy": "max-context-tokens"
-    },
     "kimi-k2.7-code": {
       "model": "kimi-k2.7-code",
       "upstreamContextTokens": 262144,

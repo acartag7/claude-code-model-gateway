@@ -74,7 +74,7 @@ async function main() {
   } else {
     const { window, constrainedBy } = resolveContextEnvironment(catalog, model);
     env.CLAUDE_CODE_MAX_CONTEXT_TOKENS = String(window);
-    console.error(`context_mode=catalog model=${modelId} window=${window} constrained_by=${constrainedBy} (smallest custom participant)`);
+    console.error(`context_mode=catalog model=${modelId} window=${window} constrained_by=${constrainedBy}`);
   }
   const child = spawn("claude", resolveClaudeArguments(selected, model, claudeArgs), {
     env,

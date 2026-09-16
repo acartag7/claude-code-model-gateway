@@ -108,41 +108,9 @@ models:
     recommendedEffort: high
     roles: [fast-implementation, narrow-mechanical-work]
 
-  - id: cursor-grok-4.6-xhigh
-    name: Cursor Grok 4.6 XHigh
-    provider: cursor
-    contextTokens: 500000
-    contextEvidence: embedded-registry
-    claudeCodeModel: cursor-grok-4.6-xhigh
-    recommendedEffort: high
-    roles: [independent-review, adversarial-review]
-
-  - id: kimi-k3-max
-    name: Kimi K3 Max
-    provider: cursor
-    contextTokens: 1048576
-    contextEvidence: embedded-registry
-    claudeCodeModel: kimi-k3-max
-    recommendedEffort: high
-    roles: [coding-implementation, repository-work]
-
-  - id: gemini-3.8-flash-high
-    name: Gemini 3.8 Flash High
-    provider: cursor
-    contextTokens: 1048576
-    contextEvidence: embedded-registry
-    claudeCodeModel: gemini-3.8-flash-high
-    recommendedEffort: high
-    roles: [multistep-research, long-context-evaluation]
-
-  - id: muse-spark-1.3-max
-    name: Muse Spark 1.3 Max
-    provider: cursor
-    contextTokens: 200000
-    contextEvidence: unverified-default
-    claudeCodeModel: muse-spark-1.3-max
-    recommendedEffort: high
-    roles: [experimental-coding]
+    # Effort-locked id: Cursor's catalog has no bare cursor-grok-4.6. The
+    # launcher raises the output budget for these ids because a baked-in
+    # thinking level can otherwise consume the whole completion (empty reply).
 
   - id: kimi-k2.7-code
     name: Kimi K2.7 Code

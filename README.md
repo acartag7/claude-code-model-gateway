@@ -156,7 +156,7 @@ Then launch Claude Code with an exact model:
 pnpm run launch -- claude-opus-5
 pnpm run launch -- gpt-5.6-sol
 pnpm run launch -- zai/glm-5.3
-pnpm run launch -- gemini-3.8-flash-high
+pnpm run launch -- composer-2.5
 ```
 
 Each launch also applies the model's `recommendedEffort` from the catalog, so the

@@ -19,10 +19,6 @@ budgeting.
 | GLM 5.3 Flash | `zai/glm-5.3-flash` | max | 1,000,000 | fast-implementation, general-engineering | provider-docs |
 | Composer 2.5 | `composer-2.5` | high | 200,000 | cursor-agent, general-engineering | provider-catalog-fallback |
 | Composer 2.5 Fast | `composer-2.5-fast` | high | 200,000 | fast-implementation, narrow-mechanical-work | provider-catalog-fallback |
-| Cursor Grok 4.6 XHigh | `cursor-grok-4.6-xhigh` | high | 500,000 | independent-review, adversarial-review | embedded-registry |
-| Kimi K3 Max | `kimi-k3-max` | high | 1,048,576 | coding-implementation, repository-work | embedded-registry |
-| Gemini 3.8 Flash High | `gemini-3.8-flash-high` | high | 1,048,576 | multistep-research, long-context-evaluation | embedded-registry |
-| Muse Spark 1.3 Max | `muse-spark-1.3-max` | high | 200,000 | experimental-coding | unverified-default |
 | Kimi K2.7 Code | `kimi-k2.7-code` | high | 262,144 | coding-implementation, repository-work | provider-docs |
 
 Default fallback: `claude-opus-5[1m]`.
