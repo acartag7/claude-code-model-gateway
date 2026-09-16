@@ -15,10 +15,9 @@ function escapeCell(value) {
 }
 
 function agentModelId(agent, model) {
-  // Claude Code derives a subagent's context budget from this ID alone; it reads
-  // no context metadata from the gateway catalog. `full` opts one agent into the
-  // experimental `[1m]` ceiling shim documented in docs/context-windows.md.
-  if (agent.contextMode === "full") return model.experimentalFullContext.model;
+  // Claude Code derives a subagent's context budget from the ID alone: native
+  // budgeting for Claude ids, one process-wide CLAUDE_CODE_MAX_CONTEXT_TOKENS
+  // value (set by scripts/launch.mjs) for unrecognized custom ids.
   return model.claudeCodeModel;
 }
 
@@ -53,8 +52,9 @@ function renderRoutingReference(catalog) {
   return `${generatedHeader}
 # Model routing reference
 
-Use exact model IDs. Custom models use Claude Code's conservative 200K client
-budget in safe mode even when the upstream context is larger.
+Use exact model IDs. The launcher sets each custom model's real upstream
+context window via CLAUDE_CODE_MAX_CONTEXT_TOKENS; Claude models use native
+budgeting.
 
 | Model | Claude Code value | Effort | Upstream context | Best for | Evidence |
 |---|---|---:|---:|---|---|
@@ -101,18 +101,31 @@ export function renderFiles(catalog) {
         CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY: "1",
         CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(catalog.autoCompactPercent),
       },
+      // Gateway discovery only keeps ids containing claude/anthropic, so
+      // non-Claude catalog models can never appear in the /model picker via
+      // /v1/models. modelPicker rows are the documented path for them
+      // (schema verified against the installed Claude Code binary):
+      // { model, label?, description?, behavesAs? }, appended to the built-in
+      // lineup while replaceBuiltInOptions is false.
+      modelPicker: {
+        options: catalog.models.map((model) => ({
+          model: model.claudeCodeModel,
+          label: model.name,
+          description: `${model.contextTokens.toLocaleString("en-US")}-token context · ${model.roles.slice(0, 2).join(", ")}`,
+        })),
+        replaceBuiltInOptions: false,
+      },
     }, null, 2)}\n`,
   );
   files.set(
     "generated/model-profiles.json",
     `${JSON.stringify({
-      safeCustomContextTokens: catalog.safeCustomContextTokens,
       autoCompactPercent: catalog.autoCompactPercent,
       profiles: Object.fromEntries(catalog.models.map((model) => [model.id, {
-        safeModel: model.claudeCodeModel,
+        model: model.claudeCodeModel,
         upstreamContextTokens: model.contextTokens,
         recommendedEffort: model.recommendedEffort,
-        experimentalFullContext: model.experimentalFullContext ?? null,
+        contextPolicy: model.provider === "anthropic" ? "native" : "max-context-tokens",
       }])),
     }, null, 2)}\n`,
   );

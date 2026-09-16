@@ -24,7 +24,7 @@ OAuth. Run deterministic checks before inference tests.
 ## Behavior and limits
 
 - [Custom models and subagents](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/custom-models.md): Exact routing, model-picker limitations, subagent override behavior, and explicit fallback rules.
-- [Context windows](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/context-windows.md): Difference between upstream capacity and Claude Code's client budget, safe mode, and unsupported full-context experiments.
+- [Context windows](https://github.com/acartag7/claude-code-model-gateway/blob/main/docs/context-windows.md): How Claude Code budgets gateway models, and how the launcher sets each custom model's real upstream window via CLAUDE_CODE_MAX_CONTEXT_TOKENS.
 - [Security policy](https://github.com/acartag7/claude-code-model-gateway/blob/main/SECURITY.md): Credential handling, network exposure, and private vulnerability reporting.
 
 ## Optional

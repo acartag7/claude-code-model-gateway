@@ -1,7 +1,7 @@
 ---
 name: integration-reviewer
 description: "Review wiring, runtime behavior, and cross-boundary integration against the exact commit."
-model: gpt-5.6-terra
+model: gpt-6-astra
 effort: high
 tools: Read, Grep, Glob, Bash
 ---

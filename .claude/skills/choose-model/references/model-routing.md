@@ -2,32 +2,26 @@
 
 # Model routing reference
 
-Use exact model IDs. Custom models use Claude Code's conservative 200K client
-budget in safe mode even when the upstream context is larger.
+Use exact model IDs. The launcher sets each custom model's real upstream
+context window via CLAUDE_CODE_MAX_CONTEXT_TOKENS; Claude models use native
+budgeting.
 
 | Model | Claude Code value | Effort | Upstream context | Best for | Evidence |
 |---|---|---:|---:|---|---|
-| Claude Fable 5 | `claude-fable-5[1m]` | high | 1,000,000 | hardest-synthesis, long-running-reasoning | provider-docs |
 | Claude Fable 5.1 | `claude-fable-5-1[1m]` | high | 1,000,000 | hardest-synthesis, long-running-reasoning, multistep-research | provider-docs |
-| Claude Opus 5 | `claude-opus-5[1m]` | xhigh | 1,000,000 | agentic-coding, long-horizon-implementation, code-review | provider-docs |
-| Claude Opus 4.8 | `claude-opus-4-8[1m]` | xhigh | 1,000,000 | contract-review, security-review, adversarial-review | provider-docs |
-| Claude Sonnet 5 | `claude-sonnet-5[1m]` | high | 1,000,000 | daily-engineering, orchestration | provider-docs |
-| GPT 6.0 Astra | `gpt-6-astra` | xhigh | 272,000 | hardest-synthesis, complex-implementation, computer-use | account-catalog |
-| Daybreak Blue | `gpt-daybreak-blue-latest` | high | 272,000 | defensive-security, security-review, adversarial-review | account-catalog |
-| GPT 5.6 Sol | `gpt-5.6-sol` | xhigh | 272,000 | acceptance-design, complex-implementation, research | account-catalog |
-| GPT 5.6 Terra | `gpt-5.6-terra` | high | 272,000 | general-implementation, integration-review | account-catalog |
-| GPT 5.6 Luna | `gpt-5.6-luna` | high | 272,000 | fast-coding, general-implementation | account-catalog |
-| GPT 5.5 | `gpt-5.5` | high | 272,000 | deep-coding, complex-reasoning | account-catalog |
-| GPT 5.3 Codex Spark | `gpt-5.3-codex-spark` | high | 128,000 | fast-coding, narrow-mechanical-work | account-catalog |
+| Claude Opus 5 | `claude-opus-5[1m]` | xhigh | 1,000,000 | agentic-coding, long-horizon-implementation, code-review, contract-review | provider-docs |
+| GPT 5.6 Sol | `gpt-5.6-sol` | xhigh | 272,000 | acceptance-design, complex-implementation, research | provider-docs |
+| GPT 6.0 Astra | `gpt-6-astra` | xhigh | 272,000 | hardest-synthesis, complex-implementation, integration-review | provider-docs |
+| Daybreak Blue | `gpt-daybreak-blue-latest` | high | 272,000 | defensive-security, security-review, adversarial-review | provider-docs |
 | Grok 4.5 | `grok-4.5` | high | 500,000 | independent-review, cross-family-reasoning | provider-docs |
-| Grok Composer 2.5 Fast | `grok-composer-2.5-fast` | high | 200,000 | fast-exploration, narrow-mechanical-work | conservative-unverified |
-| GLM 5.2 | `zai/glm-5.2` | max | 1,000,000 | implementation, large-repository-work | environment-verified |
+| Grok Composer 2.5 Fast | `grok-composer-2.5-fast` | high | 200,000 | fast-exploration, narrow-mechanical-work | provider-docs |
+| GLM 5.3 | `zai/glm-5.3` | max | 1,000,000 | implementation, large-repository-work, general-engineering | provider-docs |
 | GLM 5.3 Flash | `zai/glm-5.3-flash` | max | 1,000,000 | fast-implementation, general-engineering | provider-docs |
-| Hunyuan Hy4 Preview | `hy4-preview` | high | 1,000,000 | experimental-coding, long-context-evaluation | provider-docs |
+| Composer 2.5 | `composer-2.5` | high | 200,000 | cursor-agent, general-engineering | provider-catalog-fallback |
+| Composer 2.5 Fast | `composer-2.5-fast` | high | 200,000 | fast-implementation, narrow-mechanical-work | provider-catalog-fallback |
 | Kimi K2.7 Code | `kimi-k2.7-code` | high | 262,144 | coding-implementation, repository-work | provider-docs |
-| LongCat 2.0 | `longcat-2.0` | high | 1,000,000 | long-context-coding, repository-exploration | provider-docs |
 
-Default fallback: `claude-opus-4-8[1m]`.
+Default fallback: `claude-opus-5[1m]`.
 
 This table selects models, not process isolation. If a project requires two
 seats to use different harnesses, two subagents in one Claude Code process do

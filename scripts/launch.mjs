@@ -7,38 +7,34 @@ import { gatewayClaudeEnvironment } from "./lib/gateway.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 function usage() {
-  console.error("Usage: pnpm launch -- <safe|full> <model-id> [claude arguments]");
+  console.error("Usage: pnpm launch -- <model-id> [claude arguments]");
 }
 
-// Claude Code applies one compaction threshold per process, shared by the main
-// model and every subagent. The only safe value is the smallest upstream window
-// among the participants that claim a raised ceiling: a larger value lets a
-// smaller-window model reach its provider limit before compaction ever fires.
-export function resolveFullContextWindow(catalog, model) {
+// Claude Code budgets a model id it recognizes natively; every unrecognized
+// custom id gets one process-wide CLAUDE_CODE_MAX_CONTEXT_TOKENS value shared
+// by the main model and any non-Claude subagents. The launcher sets that value
+// to the smallest real upstream window among those participants, so no model in
+// the process claims a window its provider would reject. Claude-family models
+// keep their native [1m] ids and never receive the variable: pairing it with a
+// recognized id mis-budgets same-process custom-model subagents.
+export function resolveContextEnvironment(catalog, model) {
   const models = modelMap(catalog);
-  const participants = [model];
-  for (const agent of catalog.agents) {
-    if (agent.contextMode !== "full") continue;
-    participants.push(models.get(agent.model));
-  }
-  let constrainedBy = model;
-  let window = model.experimentalFullContext.autoCompactWindowTokens;
-  for (const participant of participants) {
-    const candidate = participant.experimentalFullContext.autoCompactWindowTokens;
-    if (candidate < window) {
-      window = candidate;
-      constrainedBy = participant;
+  const custom = [model, ...catalog.agents
+    .map((agent) => models.get(agent.model))
+    .filter((m) => m && m.provider !== "anthropic")];
+  let window = model.contextTokens;
+  let constrainedBy = model.id;
+  for (const participant of custom) {
+    if (participant.contextTokens < window) {
+      window = participant.contextTokens;
+      constrainedBy = participant.id;
     }
   }
-  return { window, constrainedBy: constrainedBy.id };
+  return { window, constrainedBy };
 }
 
-export function underPromisedFullContextAgents(catalog) {
-  const models = modelMap(catalog);
-  return catalog.agents
-    .filter((agent) => agent.contextMode === "full")
-    .filter((agent) => models.get(agent.model).contextTokens < 1000000)
-    .map((agent) => agent.name);
+export function isAnthropic(model) {
+  return model.provider === "anthropic";
 }
 
 // Curating recommendedEffort per model is pointless if the launcher never passes
@@ -56,13 +52,13 @@ export function resolveClaudeArguments(selected, model, claudeArgs) {
 export function parseLaunchArguments(values) {
   const normalized = [...values];
   if (normalized[0] === "--") normalized.shift();
-  const [mode, modelId, ...claudeArgs] = normalized;
-  return { mode, modelId, claudeArgs };
+  const [modelId, ...claudeArgs] = normalized;
+  return { modelId, claudeArgs };
 }
 
 async function main() {
-  const { mode, modelId, claudeArgs } = parseLaunchArguments(process.argv.slice(2));
-  if (!new Set(["safe", "full"]).has(mode) || !modelId) {
+  const { modelId, claudeArgs } = parseLaunchArguments(process.argv.slice(2));
+  if (!modelId) {
     usage();
     process.exitCode = 2;
     return;
@@ -71,20 +67,14 @@ async function main() {
   const catalog = await loadCatalog(root);
   const model = modelMap(catalog).get(modelId);
   if (!model) throw new Error(`Unknown model ${modelId}`);
-  let selected = model.claudeCodeModel;
+  const selected = model.claudeCodeModel;
   const env = gatewayClaudeEnvironment();
-  if (mode === "full") {
-    if (!model.experimentalFullContext) throw new Error(`${modelId} has no full-context profile`);
-    selected = model.experimentalFullContext.model;
-    const { window, constrainedBy } = resolveFullContextWindow(catalog, model);
-    env.CLAUDE_CODE_AUTO_COMPACT_WINDOW = String(window);
-    env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = String(catalog.autoCompactPercent);
-    console.error(`context_mode=experimental model=${modelId} auto_compact_window=${window} constrained_by=${constrainedBy} percent=${env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE}`);
+  if (isAnthropic(model)) {
+    console.error(`context_mode=native model=${modelId} window=${model.contextTokens} (Claude family; native budgeting)`);
   } else {
-    const underPromised = underPromisedFullContextAgents(catalog);
-    if (underPromised.length > 0) {
-      console.error(`context_warning mode=safe agents=${underPromised.join(",")} reason=raised-ceiling-without-process-compaction-window`);
-    }
+    const { window, constrainedBy } = resolveContextEnvironment(catalog, model);
+    env.CLAUDE_CODE_MAX_CONTEXT_TOKENS = String(window);
+    console.error(`context_mode=catalog model=${modelId} window=${window} constrained_by=${constrainedBy}`);
   }
   const child = spawn("claude", resolveClaudeArguments(selected, model, claudeArgs), {
     env,

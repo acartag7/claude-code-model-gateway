@@ -31,6 +31,9 @@ export function mergeSettings(current, generated) {
       ...(current.env ?? {}),
       ...(generated.env ?? {}),
     },
+    // The picker lineup is generated wholesale from models.yaml; applying it
+    // wholesale (not merged) keeps user settings from orphaning catalog rows.
+    ...(generated.modelPicker ? { modelPicker: generated.modelPicker } : {}),
   };
 }
 

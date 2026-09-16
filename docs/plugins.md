@@ -51,7 +51,7 @@ claude plugin uninstall model-gateway@claude-code-model-gateway --scope user
 - Gateway bearer keys and Cloudflare Access credentials
 - `ANTHROPIC_BASE_URL` and other process environment variables
 - Auto-compaction settings
-- Safe versus experimental context-window launch profiles
+- Per-model upstream context windows set by the launcher
 - Machine-level setup, doctor checks, and live smoke tests
 
 Claude Code copies installed plugins into its cache. A plugin cannot rely on

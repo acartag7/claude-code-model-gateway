@@ -38,7 +38,7 @@ evidence, and custom agents. The rest is generated or verified from it.
 - Six generated specialist agents
 - A `choose-model` skill with role and effort guidance
 - Automatic compaction enabled at 95%
-- Safe 200K defaults and opt-in context-window experiments
+- Real upstream context windows per model, set by the launcher
 - Local and live checks for configuration drift and missing models
 - A loopback-only CLIProxyAPI starter configuration
 
@@ -153,10 +153,10 @@ those `remove_path` lines before applying.
 Then launch Claude Code with an exact model:
 
 ```sh
-pnpm run launch -- safe claude-opus-4-8
-pnpm run launch -- safe gpt-5.6-sol
-pnpm run launch -- safe zai/glm-5.3-flash
-pnpm run launch -- safe kimi-k2.7-code
+pnpm run launch -- claude-opus-5
+pnpm run launch -- gpt-5.6-sol
+pnpm run launch -- zai/glm-5.3
+pnpm run launch -- composer-2.5
 ```
 
 Each launch also applies the model's `recommendedEffort` from the catalog, so the
@@ -263,7 +263,7 @@ explicitly; browser-login redirects are rejected as API authentication. See
 - [`docs/agent-setup.md`](docs/agent-setup.md): zero-context setup contract for agents
 - [`docs/setup.md`](docs/setup.md): complete operator walkthrough
 - [`docs/custom-models.md`](docs/custom-models.md): picker and subagent behavior
-- [`docs/context-windows.md`](docs/context-windows.md): safe and experimental context handling
+- [`docs/context-windows.md`](docs/context-windows.md): per-model upstream context windows and how the launcher sets them
 - [`docs/plugins.md`](docs/plugins.md): plugin installation, boundaries, and process-framework compatibility
 - [`config/cliproxy.example.yaml`](config/cliproxy.example.yaml): hardened local gateway baseline
 
