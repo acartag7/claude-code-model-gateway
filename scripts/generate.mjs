@@ -101,6 +101,20 @@ export function renderFiles(catalog) {
         CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY: "1",
         CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: String(catalog.autoCompactPercent),
       },
+      // Gateway discovery only keeps ids containing claude/anthropic, so
+      // non-Claude catalog models can never appear in the /model picker via
+      // /v1/models. modelPicker rows are the documented path for them
+      // (schema verified against the installed Claude Code binary):
+      // { model, label?, description?, behavesAs? }, appended to the built-in
+      // lineup while replaceBuiltInOptions is false.
+      modelPicker: {
+        options: catalog.models.map((model) => ({
+          model: model.claudeCodeModel,
+          label: model.name,
+          description: `${model.contextTokens.toLocaleString("en-US")}-token context · ${model.roles.slice(0, 2).join(", ")}`,
+        })),
+        replaceBuiltInOptions: false,
+      },
     }, null, 2)}\n`,
   );
   files.set(

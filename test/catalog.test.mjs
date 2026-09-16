@@ -37,6 +37,25 @@ test("generated settings enable auto-compaction", async () => {
   assert.equal(settings.autoCompactEnabled, true);
 });
 
+test("the picker lineup lists every catalog model including non-Claude ids", async () => {
+  const catalog = await loadCatalog(root);
+  const files = renderFiles(catalog);
+  const picker = JSON.parse(files.get("generated/claude-settings.json")).modelPicker;
+  assert.equal(picker.replaceBuiltInOptions, false);
+  assert.deepEqual(
+    picker.options.map((row) => row.model),
+    catalog.models.map((model) => model.claudeCodeModel),
+  );
+  // Discovery alone can never surface these; the lineup is their only path
+  // into /model. If this drops to zero, the gateway sessions lose them.
+  const nonClaude = picker.options.filter((row) => !/claude|anthropic/i.test(row.model));
+  assert.ok(nonClaude.length >= 10, `expected the non-Claude majority, got ${nonClaude.length}`);
+  for (const row of picker.options) {
+    assert.ok(row.label && row.description, `row ${row.model} needs label and description`);
+    assert.ok(!/\n/.test(row.description), "descriptions must stay one line");
+  }
+});
+
 test("custom agents pin bare ids; only Claude models keep [1m]", async () => {
   const catalog = await loadCatalog(root);
   const files = renderFiles(catalog);
