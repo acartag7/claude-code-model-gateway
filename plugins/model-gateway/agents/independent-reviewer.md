@@ -1,7 +1,7 @@
 ---
 name: independent-reviewer
 description: "Provide an independent cross-family review of a completed implementation."
-model: grok-4.5
+model: grok-4.6
 effort: high
 tools: Read, Grep, Glob, Bash
 ---

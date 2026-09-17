@@ -52,12 +52,12 @@ models:
     roles: [defensive-security, security-review, adversarial-review]
 
   # ── xAI ──
-  - id: grok-4.5
-    name: Grok 4.5
+  - id: grok-4.6
+    name: Grok 4.6
     provider: xai
     contextTokens: 500000
     contextEvidence: provider-docs
-    claudeCodeModel: grok-4.5
+    claudeCodeModel: grok-4.6
     recommendedEffort: high
     roles: [independent-review, cross-family-reasoning]
 
@@ -90,15 +90,6 @@ models:
     roles: [fast-implementation, general-engineering]
 
   # ── Cursor ── windows from the gateway embedded registry where it has them
-  - id: composer-2.5
-    name: Composer 2.5
-    provider: cursor
-    contextTokens: 200000
-    contextEvidence: provider-catalog-fallback
-    claudeCodeModel: composer-2.5
-    recommendedEffort: high
-    roles: [cursor-agent, general-engineering]
-
   - id: composer-2.5-fast
     name: Composer 2.5 Fast
     provider: cursor
@@ -112,14 +103,32 @@ models:
     # launcher raises the output budget for these ids because a baked-in
     # thinking level can otherwise consume the whole completion (empty reply).
 
-  - id: kimi-k2.7-code
-    name: Kimi K2.7 Code
+  - id: kimi-k3-max
+    name: Kimi K3 Max
     provider: cursor
-    contextTokens: 262144
-    contextEvidence: provider-docs
-    claudeCodeModel: kimi-k2.7-code
-    recommendedEffort: high
+    contextTokens: 1048576
+    contextEvidence: embedded-registry
+    claudeCodeModel: kimi-k3-max
+    recommendedEffort: max
     roles: [coding-implementation, repository-work]
+
+  - id: gemini-3.8-flash-high
+    name: Gemini 3.8 Flash High
+    provider: cursor
+    contextTokens: 1048576
+    contextEvidence: embedded-registry
+    claudeCodeModel: gemini-3.8-flash-high
+    recommendedEffort: high
+    roles: [multistep-research, long-context-evaluation]
+
+  - id: muse-spark-1.3-max
+    name: Muse Spark 1.3 Max
+    provider: cursor
+    contextTokens: 200000
+    contextEvidence: unverified-default
+    claudeCodeModel: muse-spark-1.3-max
+    recommendedEffort: max
+    roles: [experimental-coding]
 
 agents:
   - name: spec-critic
@@ -146,7 +155,7 @@ agents:
 
   - name: independent-reviewer
     description: Provide an independent cross-family review of a completed implementation.
-    model: grok-4.5
+    model: grok-4.6
     effort: high
     tools: [Read, Grep, Glob, Bash]
 
