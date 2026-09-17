@@ -31,9 +31,10 @@ export function mergeSettings(current, generated) {
       ...(current.env ?? {}),
       ...(generated.env ?? {}),
     },
-    // The picker lineup is generated wholesale from models.yaml; applying it
-    // wholesale (not merged) keeps user settings from orphaning catalog rows.
-    ...(generated.modelPicker ? { modelPicker: generated.modelPicker } : {}),
+    // The picker lineup is deliberately NOT written to the user's global
+    // settings: its rows name gateway-only model ids, which fail with
+    // "model may not exist" in any session that is not pointed at the
+    // gateway. It belongs to a gateway-scoped settings file instead.
   };
 }
 
