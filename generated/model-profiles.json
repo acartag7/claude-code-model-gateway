@@ -75,7 +75,7 @@
     },
     "muse-spark-1.3-max": {
       "model": "muse-spark-1.3-max",
-      "upstreamContextTokens": 200000,
+      "upstreamContextTokens": 1048576,
       "recommendedEffort": "max",
       "contextPolicy": "max-context-tokens"
     }

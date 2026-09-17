@@ -124,8 +124,8 @@ models:
   - id: muse-spark-1.3-max
     name: Muse Spark 1.3 Max
     provider: cursor
-    contextTokens: 200000
-    contextEvidence: unverified-default
+    contextTokens: 1048576
+    contextEvidence: provider-docs
     claudeCodeModel: muse-spark-1.3-max
     recommendedEffort: max
     roles: [experimental-coding]
