@@ -72,7 +72,7 @@
       {
         "model": "muse-spark-1.3-max",
         "label": "Muse Spark 1.3 Max",
-        "description": "200,000-token context · experimental-coding"
+        "description": "1,048,576-token context · experimental-coding"
       }
     ],
     "replaceBuiltInOptions": false

@@ -20,7 +20,7 @@ budgeting.
 | Composer 2.5 Fast | `composer-2.5-fast` | high | 200,000 | fast-implementation, narrow-mechanical-work | provider-catalog-fallback |
 | Kimi K3 Max | `kimi-k3-max` | max | 1,048,576 | coding-implementation, repository-work | embedded-registry |
 | Gemini 3.8 Flash High | `gemini-3.8-flash-high` | high | 1,048,576 | multistep-research, long-context-evaluation | embedded-registry |
-| Muse Spark 1.3 Max | `muse-spark-1.3-max` | max | 200,000 | experimental-coding | unverified-default |
+| Muse Spark 1.3 Max | `muse-spark-1.3-max` | max | 1,048,576 | experimental-coding | provider-docs |
 
 Default fallback: `claude-opus-5[1m]`.
 
