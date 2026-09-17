@@ -13,13 +13,14 @@ budgeting.
 | GPT 5.6 Sol | `gpt-5.6-sol` | xhigh | 272,000 | acceptance-design, complex-implementation, research | provider-docs |
 | GPT 6.0 Astra | `gpt-6-astra` | xhigh | 272,000 | hardest-synthesis, complex-implementation, integration-review | provider-docs |
 | Daybreak Blue | `gpt-daybreak-blue-latest` | high | 272,000 | defensive-security, security-review, adversarial-review | provider-docs |
-| Grok 4.5 | `grok-4.5` | high | 500,000 | independent-review, cross-family-reasoning | provider-docs |
+| Grok 4.6 | `grok-4.6` | high | 500,000 | independent-review, cross-family-reasoning | provider-docs |
 | Grok Composer 2.5 Fast | `grok-composer-2.5-fast` | high | 200,000 | fast-exploration, narrow-mechanical-work | provider-docs |
 | GLM 5.3 | `zai/glm-5.3` | max | 1,000,000 | implementation, large-repository-work, general-engineering | provider-docs |
 | GLM 5.3 Flash | `zai/glm-5.3-flash` | max | 1,000,000 | fast-implementation, general-engineering | provider-docs |
-| Composer 2.5 | `composer-2.5` | high | 200,000 | cursor-agent, general-engineering | provider-catalog-fallback |
 | Composer 2.5 Fast | `composer-2.5-fast` | high | 200,000 | fast-implementation, narrow-mechanical-work | provider-catalog-fallback |
-| Kimi K2.7 Code | `kimi-k2.7-code` | high | 262,144 | coding-implementation, repository-work | provider-docs |
+| Kimi K3 Max | `kimi-k3-max` | max | 1,048,576 | coding-implementation, repository-work | embedded-registry |
+| Gemini 3.8 Flash High | `gemini-3.8-flash-high` | high | 1,048,576 | multistep-research, long-context-evaluation | embedded-registry |
+| Muse Spark 1.3 Max | `muse-spark-1.3-max` | max | 200,000 | experimental-coding | unverified-default |
 
 Default fallback: `claude-opus-5[1m]`.
 
