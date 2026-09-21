@@ -31,8 +31,8 @@
       "recommendedEffort": "high",
       "contextPolicy": "max-context-tokens"
     },
-    "grok-4.6": {
-      "model": "grok-4.6",
+    "grok-4.7": {
+      "model": "grok-4.7",
       "upstreamContextTokens": 500000,
       "recommendedEffort": "high",
       "contextPolicy": "max-context-tokens"

@@ -35,8 +35,8 @@
         "description": "272,000-token context · defensive-security, security-review"
       },
       {
-        "model": "grok-4.6",
-        "label": "Grok 4.6",
+        "model": "grok-4.7",
+        "label": "Grok 4.7",
         "description": "500,000-token context · independent-review, cross-family-reasoning"
       },
       {

@@ -52,12 +52,12 @@ models:
     roles: [defensive-security, security-review, adversarial-review]
 
   # ── xAI ──
-  - id: grok-4.6
-    name: Grok 4.6
+  - id: grok-4.7
+    name: Grok 4.7
     provider: xai
     contextTokens: 500000
-    contextEvidence: provider-docs
-    claudeCodeModel: grok-4.6
+    contextEvidence: provider-upstream-probe
+    claudeCodeModel: grok-4.7
     recommendedEffort: high
     roles: [independent-review, cross-family-reasoning]
 
@@ -155,7 +155,7 @@ agents:
 
   - name: independent-reviewer
     description: Provide an independent cross-family review of a completed implementation.
-    model: grok-4.6
+    model: grok-4.7
     effort: high
     tools: [Read, Grep, Glob, Bash]
 
