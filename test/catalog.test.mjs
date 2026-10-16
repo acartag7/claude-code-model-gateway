@@ -61,7 +61,7 @@ test("custom agents pin bare ids; only Claude models keep [1m]", async () => {
   const files = renderFiles(catalog);
   for (const agent of catalog.agents) {
     const model = catalog.models.find((candidate) => candidate.id === agent.model);
-    const generated = files.get(`.claude/agents/${agent.name}.md`);
+    const generated = files.get(`plugins/model-gateway/agents/${agent.name}.md`);
     if (model.provider === "anthropic") {
       assert.match(generated, /model: .*\[1m\]/);
     } else {
@@ -87,13 +87,15 @@ test("removed legacy fields fail closed", async () => {
   assert.throws(() => parseCatalog(YAML.stringify(parsed)), /unknown field contextMode/);
 });
 
-test("plugin agents match standalone agents and remain routing-only", async () => {
+test("agents ship only as plugin agents and remain routing-only", async () => {
   const catalog = await loadCatalog(root);
   const files = renderFiles(catalog);
+  for (const relative of files.keys()) {
+    assert.ok(!relative.startsWith(".claude/agents/"), `standalone agent emitted: ${relative}`);
+  }
   for (const agent of catalog.agents) {
-    const standalone = files.get(`.claude/agents/${agent.name}.md`);
     const plugin = files.get(`plugins/model-gateway/agents/${agent.name}.md`);
-    assert.equal(plugin, standalone);
+    assert.ok(plugin, `missing plugin agent ${agent.name}`);
     assert.match(plugin, /supplies model and tool routing only/);
     assert.match(plugin, /Project and task instructions/);
   }

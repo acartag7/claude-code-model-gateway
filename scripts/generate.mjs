@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { loadCatalog, modelMap } from "./lib/catalog.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const pluginRoot = "plugins/model-gateway";
+export const pluginRoot = "plugins/model-gateway";
 const generatedMarker = "<!-- Generated from models.yaml. Do not edit. -->";
 const generatedHeader = `${generatedMarker}\n`;
 
@@ -76,9 +76,10 @@ export function renderFiles(catalog) {
   const fallback = models.get(catalog.fallbackModel);
   const files = new Map();
   for (const agent of catalog.agents) {
-    const contents = renderAgent(agent, models.get(agent.model));
-    files.set(`.claude/agents/${agent.name}.md`, contents);
-    files.set(`${pluginRoot}/agents/${agent.name}.md`, contents);
+    // Agents ship only in the plugin. Repo-level .claude/agents copies would load
+    // into every session opened in this checkout; staleGeneratedAgents removes
+    // any that remain.
+    files.set(`${pluginRoot}/agents/${agent.name}.md`, renderAgent(agent, models.get(agent.model)));
   }
   const routingReference = renderRoutingReference(catalog);
   files.set(
