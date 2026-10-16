@@ -7,6 +7,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { mergeSettings } from "../scripts/install-user.mjs";
+import { loadCatalog } from "../scripts/lib/catalog.mjs";
 
 const execFileAsync = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -41,6 +42,14 @@ test("installer entrypoint configures an isolated empty profile", async () => {
     assert.equal(settings.autoCompactEnabled, true);
     const skill = await readFile(path.join(target, "skills", "choose-model", "SKILL.md"), "utf8");
     assert.match(skill, /name: choose-model/);
+    const catalog = await loadCatalog(root);
+    assert.ok(catalog.agents.length > 0);
+    for (const agent of catalog.agents) {
+      assert.equal(
+        await readFile(path.join(target, "agents", `${agent.name}.md`), "utf8"),
+        await readFile(path.join(root, "plugins", "model-gateway", "agents", `${agent.name}.md`), "utf8"),
+      );
+    }
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }

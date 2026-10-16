@@ -90,7 +90,10 @@ separation as sufficient.
 ## Source and validation
 
 `models.yaml` remains the model and agent source of truth. `pnpm generate`
-writes both the standalone `.claude/` assets and the plugin copies. Validation:
+writes the agents only into the plugin (`plugins/model-gateway/agents`), plus
+the standalone `choose-model` skill and its plugin copy. It deletes generated
+agents left in `.claude/agents`. `pnpm install:user` installs the same plugin
+agents into `~/.claude/agents`. Validation:
 
 ```sh
 pnpm verify

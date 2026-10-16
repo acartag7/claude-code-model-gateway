@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCatalog } from "./lib/catalog.mjs";
-import { renderFiles } from "./generate.mjs";
+import { pluginRoot, renderFiles } from "./generate.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MAX_FILE_BYTES = 1024 * 1024;
@@ -66,9 +66,10 @@ async function atomicWrite(file, contents, mode) {
 
 function installableFiles(rendered) {
   const files = new Map();
+  const agentPrefix = `${pluginRoot}/agents/`;
   for (const [relative, contents] of rendered) {
-    if (relative.startsWith(".claude/agents/")) {
-      files.set(relative.slice(".claude/".length), contents);
+    if (relative.startsWith(agentPrefix)) {
+      files.set(`agents/${relative.slice(agentPrefix.length)}`, contents);
     }
   }
   for (const relative of [
